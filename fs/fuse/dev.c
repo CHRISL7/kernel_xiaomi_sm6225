@@ -502,9 +502,9 @@ static void queue_interrupt(struct fuse_iqueue *fiq, struct fuse_req *req)
 			return;
 		}
 		wake_up(&fiq->waitq);
+		kill_fasync(&fiq->fasync, SIGIO, POLL_IN);
 	}
 	spin_unlock(&fiq->lock);
-	kill_fasync(&fiq->fasync, SIGIO, POLL_IN);
 }
 
 static void request_wait_answer(struct fuse_conn *fc, struct fuse_req *req)
