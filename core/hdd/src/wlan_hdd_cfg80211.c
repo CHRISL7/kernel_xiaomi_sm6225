@@ -15041,19 +15041,21 @@ static void wlan_hdd_update_ht_cap(struct hdd_context *hdd_ctx)
 	if (QDF_STATUS_SUCCESS != status)
 		hdd_err("could not get HT capability info");
 
-	if (ht_cap_info.tx_stbc) {
-		if (hdd_ctx->wiphy->bands[HDD_NL80211_BAND_2GHZ])
-			hdd_ctx->wiphy->bands[HDD_NL80211_BAND_2GHZ]->ht_cap.cap |=
-						IEEE80211_HT_CAP_TX_STBC;
-		if (hdd_ctx->wiphy->bands[HDD_NL80211_BAND_5GHZ])
-			hdd_ctx->wiphy->bands[HDD_NL80211_BAND_5GHZ]->ht_cap.cap |=
-						IEEE80211_HT_CAP_TX_STBC;
-	}
-
 	band_2g = hdd_ctx->wiphy->bands[HDD_NL80211_BAND_2GHZ];
 	band_5g = hdd_ctx->wiphy->bands[HDD_NL80211_BAND_5GHZ];
 
 	if (band_2g) {
+		if (ht_cap_info.tx_stbc)
+			band_2g->ht_cap.cap |= IEEE80211_HT_CAP_TX_STBC;
+
+		if (!sme_is_feature_supported_by_fw(DOT11AC)) {
+			band_2g->vht_cap.vht_supported = 0;
+			band_2g->vht_cap.cap = 0;
+		}
+
+		if (!ht_cap_info.short_gi_20_mhz)
+			band_2g->ht_cap.cap &= ~IEEE80211_HT_CAP_SGI_20;
+
 		for (i = 0; i < hdd_ctx->num_rf_chains; i++)
 			band_2g->ht_cap.mcs.rx_mask[i] = 0xff;
 
@@ -15065,29 +15067,27 @@ static void wlan_hdd_update_ht_cap(struct hdd_context *hdd_ctx)
 				cpu_to_le16(150 * hdd_ctx->num_rf_chains);
 	}
 
-	if (!sme_is_feature_supported_by_fw(DOT11AC)) {
-		hdd_ctx->wiphy->bands[HDD_NL80211_BAND_2GHZ]->
-						vht_cap.vht_supported = 0;
-		hdd_ctx->wiphy->bands[HDD_NL80211_BAND_2GHZ]->vht_cap.cap = 0;
-		hdd_ctx->wiphy->bands[HDD_NL80211_BAND_5GHZ]->
-						vht_cap.vht_supported = 0;
-		hdd_ctx->wiphy->bands[HDD_NL80211_BAND_5GHZ]->vht_cap.cap = 0;
-	}
-
-	if (!ht_cap_info.short_gi_20_mhz) {
-		wlan_hdd_band_2_4_ghz.ht_cap.cap &= ~IEEE80211_HT_CAP_SGI_20;
-		wlan_hdd_band_5_ghz.ht_cap.cap &= ~IEEE80211_HT_CAP_SGI_20;
-	}
-
-	if (!ht_cap_info.short_gi_40_mhz)
-		wlan_hdd_band_5_ghz.ht_cap.cap &= ~IEEE80211_HT_CAP_SGI_40;
-
-	ucfg_mlme_get_channel_bonding_5ghz(hdd_ctx->psoc, &channel_bonding_mode);
-	if (!channel_bonding_mode)
-		wlan_hdd_band_5_ghz.ht_cap.cap &=
-			~IEEE80211_HT_CAP_SUP_WIDTH_20_40;
-
 	if (band_5g) {
+		if (ht_cap_info.tx_stbc)
+			band_5g->ht_cap.cap |= IEEE80211_HT_CAP_TX_STBC;
+
+		if (!sme_is_feature_supported_by_fw(DOT11AC)) {
+			band_5g->vht_cap.vht_supported = 0;
+			band_5g->vht_cap.cap = 0;
+		}
+
+		if (!ht_cap_info.short_gi_20_mhz)
+			band_5g->ht_cap.cap &= ~IEEE80211_HT_CAP_SGI_20;
+
+		if (!ht_cap_info.short_gi_40_mhz)
+			band_5g->ht_cap.cap &= ~IEEE80211_HT_CAP_SGI_40;
+
+		ucfg_mlme_get_channel_bonding_5ghz(hdd_ctx->psoc,
+						   &channel_bonding_mode);
+		if (!channel_bonding_mode)
+			band_5g->ht_cap.cap &=
+					~IEEE80211_HT_CAP_SUP_WIDTH_20_40;
+
 		for (i = 0; i < hdd_ctx->num_rf_chains; i++)
 			band_5g->ht_cap.mcs.rx_mask[i] = 0xff;
 		/*
