@@ -165,4 +165,3 @@ endif # Multi-ko check
 endif # DLKM check
 endif # supported target check
 endif # WLAN enabled check
-endif # ENABLE_QCACLD
