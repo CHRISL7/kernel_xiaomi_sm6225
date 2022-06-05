@@ -1789,6 +1789,19 @@ static int smb5_batt_get_prop(struct power_supply *psy,
 		val->intval = chg->sw_jeita_enabled;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+		if (!strncmp(current->comm, "healthd", 7)) {
+			rc = smblib_get_prop_usb_online(chg, val);
+			if (val->intval) {
+				rc = smblib_get_prop_usb_voltage_now(chg, val);
+				break;
+			}
+
+			rc = smblib_get_prop_dc_online(chg, val);
+			if (val->intval) {
+				rc = smblib_get_prop_dc_voltage_now(chg, val);
+				break;
+			}
+		}
 		rc = smblib_get_prop_from_bms(chg,
 				POWER_SUPPLY_PROP_VOLTAGE_NOW, val);
 		break;
