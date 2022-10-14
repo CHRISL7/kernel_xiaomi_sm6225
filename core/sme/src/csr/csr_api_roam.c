@@ -15529,6 +15529,30 @@ csr_store_sae_single_pmk_to_global_cache(struct mac_context *mac,
 	qdf_mem_zero(pmk_info, sizeof(*pmk_info));
 	qdf_mem_free(pmk_info);
 }
+
+void
+csr_set_sae_single_pmk_info(struct csr_roam_session *session,
+			    tPmkidCacheInfo *roam_sync_pmksa)
+{
+	tPmkidCacheInfo *cached_pmksa;
+	int i;
+
+	for (i = 0; i < session->NumPmkidCache; i++) {
+		cached_pmksa = &session->PmkidCacheInfo[i];
+		if (qdf_is_macaddr_equal(&roam_sync_pmksa->BSSID,
+					 &cached_pmksa->BSSID) &&
+		    roam_sync_pmksa->single_pmk_supported &&
+		    roam_sync_pmksa->pmk_len) {
+			cached_pmksa->single_pmk_supported =
+					roam_sync_pmksa->single_pmk_supported;
+			cached_pmksa->pmk_len =
+					roam_sync_pmksa->pmk_len;
+			qdf_mem_copy(cached_pmksa->pmk,
+				     roam_sync_pmksa->pmk,
+				     roam_sync_pmksa->pmk_len);
+		}
+	}
+}
 #endif
 
 void csr_update_pmk_cache_ft(struct mac_context *mac,
@@ -23072,11 +23096,12 @@ static bool csr_is_sae_single_pmk_vsie_ap(struct bss_description *bss_des)
 static void
 csr_check_and_set_sae_single_pmk_cap(struct mac_context *mac_ctx,
 				     struct csr_roam_session *session,
-				     uint8_t vdev_id)
+				     uint8_t vdev_id, uint8_t *psk_pmk,
+				     uint8_t pmk_len)
 {
 	struct wlan_objmgr_vdev *vdev;
 	struct mlme_pmk_info *pmk_info;
-	tPmkidCacheInfo *pmkid_cache;
+	tPmkidCacheInfo *pmkid_cache, *roam_sync_pmksa;
 	uint32_t pmkid_index;
 	bool val, lookup_success;
 
@@ -23094,9 +23119,23 @@ csr_check_and_set_sae_single_pmk_cap(struct mac_context *mac_ctx,
 		if (!val)
 			goto end;
 
-		csr_set_sae_single_pmk_bss_cap(session, true,
-					       (struct qdf_mac_addr *)
-					       session->pConnectBssDesc->bssId);
+		roam_sync_pmksa = qdf_mem_malloc(sizeof(*roam_sync_pmksa));
+		if (roam_sync_pmksa) {
+			qdf_copy_macaddr(&roam_sync_pmksa->BSSID,
+					 (struct qdf_mac_addr *)
+					 &session->pConnectBssDesc->bssId);
+			roam_sync_pmksa->single_pmk_supported = true;
+			roam_sync_pmksa->pmk_len = pmk_len;
+			qdf_mem_copy(roam_sync_pmksa->pmk, psk_pmk,
+				     roam_sync_pmksa->pmk_len);
+			/* update single pmk info for roamed ap to pmk table */
+			csr_set_sae_single_pmk_info(session,
+						    roam_sync_pmksa);
+			qdf_mem_zero(roam_sync_pmksa, sizeof(*roam_sync_pmksa));
+			qdf_mem_free(roam_sync_pmksa);
+		} else {
+			goto end;
+		}
 
 		pmkid_cache = qdf_mem_malloc(sizeof(*pmkid_cache));
 		if (!pmkid_cache)
@@ -23145,7 +23184,8 @@ end:
 static inline void
 csr_check_and_set_sae_single_pmk_cap(struct mac_context *mac_ctx,
 				     struct csr_roam_session *session,
-				     uint8_t vdev_id)
+				     uint8_t vdev_id, uint8_t *psk_pmk,
+				     uint8_t pmk_len)
 {
 }
 #endif
@@ -23300,8 +23340,14 @@ static QDF_STATUS csr_process_roam_sync_callback(struct mac_context *mac_ctx,
 
 		if (ucfg_pkt_capture_get_pktcap_mode())
 			ucfg_pkt_capture_record_channel(vdev);
-		csr_check_and_set_sae_single_pmk_cap(mac_ctx, session,
-						     session_id);
+
+		if (roam_synch_data->pmk_len) {
+			csr_check_and_set_sae_single_pmk_cap(
+						mac_ctx, session,
+						session_id,
+						roam_synch_data->pmk,
+						roam_synch_data->pmk_len);
+		}
 
 		if (WLAN_REG_IS_5GHZ_CH(bss_desc->channelId)) {
 			session->disable_hi_rssi = true;
