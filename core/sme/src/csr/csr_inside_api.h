@@ -886,6 +886,9 @@ void csr_clear_sae_single_pmk(struct mac_context *mac,
 void csr_store_sae_single_pmk_to_global_cache(struct mac_context *mac,
 					      struct csr_roam_session *session,
 					      uint8_t vdev_id);
+
+void csr_set_sae_single_pmk_info(struct csr_roam_session *session,
+				 tPmkidCacheInfo *roam_sync_pmksa);
 #else
 static inline
 void csr_set_sae_single_pmk_bss_cap(struct csr_roam_session *session,
@@ -905,6 +908,12 @@ void csr_store_sae_single_pmk_to_global_cache(struct mac_context *mac,
 					      struct csr_roam_session *session,
 					      uint8_t vdev_id)
 {}
+
+static inline void
+csr_set_sae_single_pmk_info(struct csr_roam_session *session,
+			    tPmkidCacheInfo *roam_sync_pmksa)
+{
+}
 #endif
 
 QDF_STATUS csr_send_ext_change_channel(struct mac_context *mac_ctx,
