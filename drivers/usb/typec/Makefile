@@ -10,6 +10,3 @@ obj-$(CONFIG_TYPEC_TPS6598X)	+= tps6598x.o
 obj-$(CONFIG_TYPEC)		+= mux/
 obj-$(CONFIG_TYPEC_TCPCI)	+= tcpci.o
 obj-$(CONFIG_TYPEC_RT1711H)	+= tcpci_rt1711h.o
-obj-$(CONFIG_MUIC_MAX77729)		+= maxim/
-obj-$(CONFIG_TCPC_CLASS)	+= tcpc/
-obj-$(CONFIG_WUSB3801_DEBUG)    +=wusb3801x/

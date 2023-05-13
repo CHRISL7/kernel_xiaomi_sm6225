@@ -20,8 +20,6 @@
 #include <linux/uio.h>
 #include <linux/fs.h>
 
-#include <trace/events/android_fs.h>
-
 static const struct file_operations fuse_direct_io_file_operations;
 
 static int fuse_send_open(struct fuse_conn *fc, u64 nodeid, struct file *file,
@@ -463,14 +461,6 @@ int fuse_fsync_common(struct file *file, loff_t start, loff_t end,
 
 	inode_lock(inode);
 
-	if (trace_android_fs_fsync_start_enabled()) {
-		char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
-		path = android_fstrace_get_pathname(pathbuf,
-				MAX_TRACE_PATHBUF_LEN, inode);
-		trace_android_fs_fsync_start(inode,
-				current->pid, path, current->comm);
-	}
-
 	/*
 	 * Start writeback against all dirty pages of the inode, then
 	 * wait for all outstanding writes, before sending the FSYNC
@@ -515,7 +505,6 @@ int fuse_fsync_common(struct file *file, loff_t start, loff_t end,
 		err = 0;
 	}
 out:
-	trace_android_fs_fsync_end(inode, start, end - start);
 	inode_unlock(inode);
 	return err;
 }
@@ -738,16 +727,6 @@ static int fuse_do_readpage(struct file *file, struct page *page)
 	u64 attr_ver;
 	int err;
 
-	if (trace_android_fs_dataread_start_enabled()) {
-		char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
-		path = android_fstrace_get_pathname(pathbuf,
-						    MAX_TRACE_PATHBUF_LEN,
-						    inode);
-		trace_android_fs_dataread_start(inode, pos, count,
-						current->pid, path,
-						current->comm);
-	}
-
 	/*
 	 * Page writeback can extend beyond the lifetime of the
 	 * page-cache page, so make sure we read a properly synced
@@ -781,7 +760,6 @@ static int fuse_do_readpage(struct file *file, struct page *page)
 		SetPageUptodate(page);
 	}
 
-	trace_android_fs_dataread_end(inode, pos, count);
 	fuse_put_request(fc, req);
 
 	return err;
@@ -836,11 +814,6 @@ static void fuse_readpages_end(struct fuse_conn *fc, struct fuse_req *req)
 	}
 	if (req->ff)
 		fuse_file_put(req->ff, false, false);
-
-	if (trace_android_fs_dataread_end_enabled()) {
-		struct inode *inode = mapping->host;
-		trace_android_fs_dataread_end(inode, page_offset(req->pages[0]), num_read);
-	}
 }
 
 static void fuse_send_readpages(struct fuse_req *req, struct file *file)
@@ -941,22 +914,10 @@ static int fuse_readpages(struct file *file, struct address_space *mapping,
 
 	err = read_cache_pages(mapping, pages, fuse_readpages_fill, &data);
 	if (!err) {
-		if (data.req->num_pages) {
-			if (trace_android_fs_dataread_start_enabled()) {
-				char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
-				loff_t pos = page_offset(data.req->pages[0]);
-				size_t count = data.req->num_pages << PAGE_SHIFT;
-				path = android_fstrace_get_pathname(pathbuf,
-							MAX_TRACE_PATHBUF_LEN,
-							inode);
-				trace_android_fs_dataread_start(inode, pos, count,
-						current->pid, path,
-						current->comm);
-			}
+		if (data.req->num_pages)
 			fuse_send_readpages(data.req, file);
-		} else {
+		else
 			fuse_put_request(fc, data.req);
-		}
 	}
 out:
 	return err;
@@ -1170,16 +1131,6 @@ static ssize_t fuse_perform_write(struct kiocb *iocb,
 	if (is_bad_inode(inode))
 		return -EIO;
 
-	if (trace_android_fs_datawrite_start_enabled()) {
-		char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
-		path = android_fstrace_get_pathname(pathbuf,
-						    MAX_TRACE_PATHBUF_LEN,
-						    inode);
-		trace_android_fs_datawrite_start(inode, pos, iov_iter_count(ii),
-						current->pid, path,
-						current->comm);
-	}
-
 	if (inode->i_size < pos + iov_iter_count(ii))
 		set_bit(FUSE_I_SIZE_UNSTABLE, &fi->state);
 
@@ -1218,7 +1169,6 @@ static ssize_t fuse_perform_write(struct kiocb *iocb,
 	if (res > 0)
 		fuse_write_update_size(inode, pos);
 
-	trace_android_fs_datawrite_end(inode, pos, iov_iter_count(ii));
 	clear_bit(FUSE_I_SIZE_UNSTABLE, &fi->state);
 	fuse_invalidate_attr(inode);
 
@@ -1400,25 +1350,6 @@ ssize_t fuse_direct_io(struct fuse_io_priv *io, struct iov_iter *iter,
 	struct fuse_req *req;
 	int err = 0;
 
-	if (trace_android_fs_dataread_start_enabled() && !write) {
-		char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
-		path = android_fstrace_get_pathname(pathbuf,
-						    MAX_TRACE_PATHBUF_LEN,
-						    inode);
-		trace_android_fs_dataread_start(inode, pos, count,
-						current->pid, path,
-						current->comm);
-	}
-	if (trace_android_fs_datawrite_start_enabled() && write) {
-		char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
-		path = android_fstrace_get_pathname(pathbuf,
-						    MAX_TRACE_PATHBUF_LEN,
-						    inode);
-		trace_android_fs_datawrite_start(inode, pos, count,
-						current->pid, path,
-						current->comm);
-	}
-
 	if (io->async)
 		req = fuse_get_req_for_background(fc, fuse_iter_npages(iter));
 	else
@@ -1476,12 +1407,6 @@ ssize_t fuse_direct_io(struct fuse_io_priv *io, struct iov_iter *iter,
 	}
 	if (!IS_ERR(req))
 		fuse_put_request(fc, req);
-
-	if (trace_android_fs_dataread_end_enabled() && !write)
-		trace_android_fs_dataread_end(inode, pos, count);
-	if (trace_android_fs_datawrite_end_enabled() && write)
-		trace_android_fs_datawrite_end(inode, pos, count);
-
 	if (res > 0)
 		*ppos = pos;
 
@@ -2034,19 +1959,8 @@ static int fuse_write_begin(struct file *file, struct address_space *mapping,
 	struct page *page;
 	loff_t fsize;
 	int err = -ENOMEM;
-	struct inode *inode = mapping->host;
 
 	WARN_ON(!fc->writeback_cache);
-
-	if (trace_android_fs_datawrite_start_enabled()) {
-		char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
-		path = android_fstrace_get_pathname(pathbuf,
-						    MAX_TRACE_PATHBUF_LEN,
-						    inode);
-		trace_android_fs_datawrite_start(inode, pos, len,
-						current->pid, path,
-						current->comm);
-	}
 
 	page = grab_cache_page_write_begin(mapping, index, flags);
 	if (!page)
@@ -2105,7 +2019,6 @@ static int fuse_write_end(struct file *file, struct address_space *mapping,
 unlock:
 	unlock_page(page);
 	put_page(page);
-	trace_android_fs_datawrite_end(inode, pos, len);
 
 	return copied;
 }
