@@ -40,15 +40,6 @@
 #include <linux/pmic-voter.h>//"pmic-voter.h"
 //#include "step-chg-jeita.h"
 
-#if 1  /*only for debug*/
-#undef pr_debug
-#define pr_debug pr_err
-#undef pr_info
-#define pr_info pr_err
-#undef dev_dbg
-#define dev_dbg dev_err
-#endif
-
 #define	INVALID_REG_ADDR	0xFF
 #define   RET_ERR -1
 
