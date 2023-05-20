@@ -409,6 +409,7 @@ static int dsi_bridge_get_panel_info(struct drm_bridge *bridge, char *buf)
 	return rc;
 }
 
+#ifdef CONFIG_TARGET_PROJECT_K7T
 int dsi_panel_set_doze_backlight(struct dsi_display *display);
 
 ssize_t dsi_panel_get_doze_backlight(struct dsi_display *display, char *buf);
@@ -456,6 +457,7 @@ ssize_t dsi_bridge_disp_get_doze_backlight(struct drm_connector *connector,
 	return dsi_panel_get_doze_backlight(display, buf);
 
 }
+#endif
 
 static void dsi_bridge_enable(struct drm_bridge *bridge)
 {

@@ -498,6 +498,15 @@ exit:
 	return rc;
 }
 
+#ifdef CONFIG_TARGET_PROJECT_C3Q
+static bool lcd_reset_keep_high = false;
+void set_lcd_reset_gpio_keep_high(bool en)
+{
+	lcd_reset_keep_high = en;
+}
+EXPORT_SYMBOL(set_lcd_reset_gpio_keep_high);
+#endif
+
 static int dsi_panel_power_off(struct dsi_panel *panel)
 {
 	int rc = 0;
@@ -743,6 +752,7 @@ error:
 	return rc;
 }
 
+#ifdef CONFIG_TARGET_PROJECT_K7T
 int dsi_panel_set_doze_backlight(struct dsi_display *display)
 {
 	int rc = 0;
@@ -818,6 +828,7 @@ ssize_t dsi_panel_get_doze_backlight(struct dsi_display *display, char *buf)
 
 	return rc;
 }
+#endif
 
 int dsi_panel_set_backlight(struct dsi_panel *panel, u32 bl_lvl)
 {
