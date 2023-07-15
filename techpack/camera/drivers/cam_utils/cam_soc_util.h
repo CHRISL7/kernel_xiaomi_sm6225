@@ -446,6 +446,11 @@ int cam_soc_util_get_option_clk_by_name(struct cam_hw_soc_info *soc_info,
  */
 int cam_soc_util_clk_put(struct clk **clk);
 
+#ifdef CONFIG_CAMERA_FLASH_PWM
+int cam_soc_util_set_clk_duty_cycle(struct clk *clk, const char *clk_name,
+    unsigned int num, unsigned int den);
+#endif
+
 /**
  * cam_soc_util_clk_enable()
  *

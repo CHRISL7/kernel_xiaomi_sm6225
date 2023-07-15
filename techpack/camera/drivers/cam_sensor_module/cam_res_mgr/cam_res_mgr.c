@@ -477,7 +477,7 @@ int cam_res_mgr_gpio_request(struct device *dev, uint gpio,
 }
 EXPORT_SYMBOL(cam_res_mgr_gpio_request);
 
-static void cam_res_mgr_gpio_free(struct device *dev, uint gpio)
+void cam_res_mgr_gpio_free(struct device *dev, uint gpio)
 {
 	bool found = false;
 	bool need_free = true;
@@ -535,6 +535,7 @@ static void cam_res_mgr_gpio_free(struct device *dev, uint gpio)
 	if (need_free)
 		gpio_free(gpio);
 }
+EXPORT_SYMBOL(cam_res_mgr_gpio_free);
 
 void cam_res_mgr_gpio_free_arry(struct device *dev,
 		const struct gpio *array, size_t num)

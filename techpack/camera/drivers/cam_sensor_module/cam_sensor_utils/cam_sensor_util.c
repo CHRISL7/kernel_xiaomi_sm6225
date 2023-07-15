@@ -17,6 +17,11 @@
 #define CAM_SENSOR_PINCTRL_STATE_SLEEP "cam_suspend"
 #define CAM_SENSOR_PINCTRL_STATE_DEFAULT "cam_default"
 
+#ifdef CONFIG_CAMERA_FLASH_PWM
+#define CAM_PWM_PINCTRL_STATE_DEFAULT "pwm_default"
+#define CAM_PWM_PINCTRL_STATE_SLEEP "pwm_suspend"
+#endif
+
 /* hzk add for distinguish front i&&ii bengin */
 #define CAM_SENSOR_FRONT_MIN_VOLTAGE 1050000
 #define CAM_SENSOR_FRONT_MAX_VOLTAGE 1200000
@@ -1745,6 +1750,49 @@ int msm_camera_pinctrl_init(
 
 	return 0;
 }
+
+#ifdef CONFIG_CAMERA_FLASH_PWM
+int msm_flash_pinctrl_init(
+	struct msm_pinctrl_info *sensor_pctrl, struct device *dev)
+{
+	sensor_pctrl->pinctrl = devm_pinctrl_get(dev);
+	if (IS_ERR_OR_NULL(sensor_pctrl->pinctrl)) {
+		CAM_DBG(CAM_SENSOR, "Getting pinctrl handle failed");
+		return -EINVAL;
+	}
+	sensor_pctrl->gpio_state_active =
+		pinctrl_lookup_state(sensor_pctrl->pinctrl,
+				CAM_SENSOR_PINCTRL_STATE_DEFAULT);
+	if (IS_ERR_OR_NULL(sensor_pctrl->gpio_state_active)) {
+		CAM_ERR(CAM_SENSOR,
+			"Failed to get the active state pinctrl handle");
+		return -EINVAL;
+	}
+	sensor_pctrl->gpio_state_suspend
+		= pinctrl_lookup_state(sensor_pctrl->pinctrl,
+				CAM_SENSOR_PINCTRL_STATE_SLEEP);
+	if (IS_ERR_OR_NULL(sensor_pctrl->gpio_state_suspend)) {
+		CAM_ERR(CAM_SENSOR,
+			"Failed to get the suspend state pinctrl handle");
+		return -EINVAL;
+	}
+	sensor_pctrl->pwm_state_active
+		= pinctrl_lookup_state(sensor_pctrl->pinctrl,
+				CAM_PWM_PINCTRL_STATE_DEFAULT);
+	if (IS_ERR_OR_NULL(sensor_pctrl->pwm_state_active)) {
+		CAM_ERR(CAM_SENSOR,
+			"Failed to get the pwm active state pinctrl handle");
+	}
+	sensor_pctrl->pwm_state_suspend
+		= pinctrl_lookup_state(sensor_pctrl->pinctrl,
+				CAM_PWM_PINCTRL_STATE_SLEEP);
+	if (IS_ERR_OR_NULL(sensor_pctrl->pwm_state_suspend)) {
+		CAM_ERR(CAM_SENSOR,
+			"Failed to get the pwm suspend state pinctrl handle");
+	}
+	return 0;
+}
+#endif
 
 int cam_sensor_bob_pwm_mode_switch(struct cam_hw_soc_info *soc_info,
 	int bob_reg_idx, bool flag)

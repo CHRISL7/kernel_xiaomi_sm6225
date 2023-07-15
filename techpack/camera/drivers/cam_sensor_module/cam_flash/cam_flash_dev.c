@@ -8,6 +8,7 @@
 #include "cam_flash_soc.h"
 #include "cam_flash_core.h"
 #include "cam_common_util.h"
+#include "oplus_cam_flash_aw3641e.h"
 
 static int32_t cam_flash_driver_cmd(struct cam_flash_ctrl *fctrl,
 		void *arg, struct cam_flash_private_soc *soc_private)
@@ -508,6 +509,32 @@ static int32_t cam_flash_platform_probe(struct platform_device *pdev)
 		fctrl->func_tbl.apply_setting = cam_flash_i2c_apply_setting;
 		fctrl->func_tbl.power_ops = cam_flash_i2c_power_ops;
 		fctrl->func_tbl.flush_req = cam_flash_i2c_flush_request;
+#ifdef CONFIG_CAMERA_FLASH_PWM
+	} else if (fctrl->flash_type == 2) {
+		soc_info = &fctrl->soc_info;
+		if (!soc_info->gpio_data) {
+			CAM_INFO(CAM_FLASH, "No GPIO found");
+			rc = 0;
+			return rc;
+		}
+
+		if (!soc_info->gpio_data->cam_gpio_common_tbl_size) {
+			CAM_INFO(CAM_FLASH, "No GPIO found");
+			return -EINVAL;
+		}
+
+		rc = cam_sensor_util_init_gpio_pin_tbl(soc_info,
+				&fctrl->power_info.gpio_num_info);
+		if ((rc < 0) || (!fctrl->power_info.gpio_num_info)) {
+			CAM_ERR(CAM_FLASH, "No/Error Flash GPIOs");
+			return -EINVAL;
+		}
+
+		fctrl->func_tbl.parser = cam_flash_gpio_pkt_parser;
+		fctrl->func_tbl.apply_setting = cam_flash_gpio_apply_setting;
+		fctrl->func_tbl.power_ops = cam_flash_gpio_power_ops;
+		fctrl->func_tbl.flush_req = cam_flash_gpio_flush_request;
+#endif
 	} else {
 		/* PMIC Flash */
 		fctrl->func_tbl.parser = cam_flash_pmic_pkt_parser;

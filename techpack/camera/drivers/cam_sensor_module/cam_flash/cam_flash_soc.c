@@ -28,7 +28,13 @@ static int32_t cam_get_source_node_info(
 	if (rc) {
 		CAM_ERR(CAM_FLASH, "flash-type read failed rc=%d", rc);
 		soc_private->flash_type = CAM_FLASH_TYPE_PMIC;
+#ifdef CONFIG_CAMERA_FLASH_PWM
+	} else if(soc_private->flash_type == CAM_FLASH_TYPE_GPIO) {
+		fctrl->flash_type = CAM_FLASH_TYPE_GPIO;
 	}
+#else
+	}
+#endif
 
 	switch_src_node = of_parse_phandle(of_node, "switch-source", 0);
 	if (!switch_src_node) {

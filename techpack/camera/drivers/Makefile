@@ -14,3 +14,7 @@ obj-$(CONFIG_SPECTRA_CAMERA_FD)   += cam_fd/
 obj-$(CONFIG_SPECTRA_CAMERA_LRME) += cam_lrme/
 obj-$(CONFIG_SPECTRA_CAMERA_CUST) += cam_cust/
 obj-$(CONFIG_SPECTRA_CAMERA_OPE)  += cam_ope/
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#fujiahao@camera 2021-9-10 add for jieou kernel
+obj-$(CONFIG_SPECTRA_CAMERA)      += ../oplus/drivers/cam_sensor_module/
+#endif

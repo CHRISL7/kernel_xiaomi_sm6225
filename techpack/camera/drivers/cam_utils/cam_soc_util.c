@@ -594,6 +594,25 @@ int cam_soc_util_get_option_clk_by_name(struct cam_hw_soc_info *soc_info,
 	return 0;
 }
 
+#ifdef CONFIG_CAMERA_FLASH_PWM
+int cam_soc_util_set_clk_duty_cycle(struct clk *clk, const char *clk_name,
+    unsigned int num, unsigned int den)
+{
+    int rc = 0;
+
+    if (!clk || !clk_name)
+        return -EINVAL;
+
+    rc = clk_set_duty_cycle(clk, num, den);
+    if (rc) {
+        CAM_ERR(CAM_UTIL, "enable failed for %s: rc(%d)", clk_name, rc);
+        return rc;
+    }
+
+    return rc;
+}
+#endif
+
 int cam_soc_util_clk_enable(struct clk *clk, const char *clk_name,
 	int32_t clk_rate)
 {

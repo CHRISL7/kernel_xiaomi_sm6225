@@ -262,6 +262,10 @@ struct msm_pinctrl_info {
 	struct pinctrl *pinctrl;
 	struct pinctrl_state *gpio_state_active;
 	struct pinctrl_state *gpio_state_suspend;
+#ifdef CONFIG_CAMERA_FLASH_PWM
+	struct pinctrl_state *pwm_state_active;
+	struct pinctrl_state *pwm_state_suspend;
+#endif
 	bool use_pinctrl;
 };
 
