@@ -42,6 +42,7 @@
 		swr0 = &swr0;
 		swr1 = &swr1;
 		ufshc1 = &ufshc_mem; /* Embedded UFS slot */
+	    spi0 = &qupv3_se0_spi;
 	};
 
 	cpus {
@@ -439,6 +440,15 @@
 			size = <0x0 0x2000000>;
 			linux,cma-default;
 		};
+
+		/* Pstore ramoops */
+        ramoops_mem:ramoops@5D000000 {
+			compatible = "ramoops";
+			reg = <0x00 0x5d000000 0x00 0x400000>;
+			record-size = <0x80000>;
+			pmsg-size = <0x200000>;
+			console-size = <0x100000>;
+		};
 	};
 
 	chosen {
@@ -554,6 +564,12 @@
 		clock-names = "core_clk";
 
 		qcom,coresight-jtagmm-cpu = <&CPU7>;
+	};
+
+    sn_fuse:snfuse@0x01B46134 {
+		compatible = "qcom,sn-fuse";
+		reg = <0x1b46134 0x04 0x1b4607c 0x04>;
+		reg-names = "sn-base", "fuse-state";
 	};
 
 	qcom,memshare {
@@ -4195,6 +4211,8 @@ tpdm_turing_llm: tpdm@8861000 {
 	interrupt-parent = <&tlmm>;
 	interrupts = <25 IRQ_TYPE_EDGE_RISING>;
 
+    status = "disable";
+	reg = <0x88>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pm8008_active &pm8008_interrupt>;
 };
@@ -4308,6 +4326,18 @@ tpdm_turing_llm: tpdm@8861000 {
 		};
 	};
 
+    disp_lcd_bias_en {
+	disp_lcd_bias_en_default:
+		disp_lcd_bias_en_default {
+			pins = "gpio9";
+			function = "func1";
+			input-disable;
+			output-enable;
+			bias-disable;
+			power-source = <0>;
+			qcom,drive-strength = <2>;
+		};
+	};
 };
 
 &spmi_bus {
