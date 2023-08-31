@@ -18,7 +18,7 @@
 #include "pd_dbg_info.h"
 
 /*show debug message or not */
-#define ENABLE_RT1711_DBG	0
+// #define ENABLE_RT1711_DBG	1
 
 /* RT1711H Private RegMap */
 
@@ -193,7 +193,7 @@
 #define RT1711H_REG_I2CRST_SET(en, tout)	\
 	((en << 7) | (tout & 0x0f))
 
-#if ENABLE_RT1711_DBG
+#ifdef ENABLE_RT1711_DBG
 #define RT1711_INFO(format, args...) \
 	pd_dbg_info("%s() line-%d: " format,\
 	__func__, __LINE__, ##args)
