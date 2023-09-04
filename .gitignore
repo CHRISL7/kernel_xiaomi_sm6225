@@ -63,6 +63,10 @@ modules.builtin
 #
 /*.spec
 
+# Ignored Paths
+out/
+tc/
+
 #
 # Debian directory (make deb-pkg)
 #
