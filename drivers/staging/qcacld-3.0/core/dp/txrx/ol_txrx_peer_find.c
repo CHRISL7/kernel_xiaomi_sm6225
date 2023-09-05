@@ -22,7 +22,7 @@
 #include <qdf_mem.h>         /* qdf_mem_malloc, etc. */
 #include <qdf_types.h>          /* qdf_device_t, qdf_print */
 /* header files for utilities */
-#include "queue.h"         /* TAILQ */
+#include <cds_queue.h>          /* TAILQ */
 
 /* header files for configuration API */
 #include <ol_cfg.h>             /* ol_cfg_max_peer_id */
@@ -654,7 +654,7 @@ void ol_rx_peer_unmap_handler(ol_txrx_pdev_handle pdev, uint16_t peer_id)
 	if (qdf_atomic_read(
 		&pdev->peer_id_to_obj_map[peer_id].del_peer_id_ref_cnt)) {
 		/* This peer_id belongs to a peer already deleted */
-		peer = pdev->peer_id_to_obj_map[peer_id].del_peer;
+        peer = pdev->peer_id_to_obj_map[peer_id].del_peer;
 		if (qdf_atomic_dec_and_test
 		    (&pdev->peer_id_to_obj_map[peer_id].del_peer_id_ref_cnt)) {
 			pdev->peer_id_to_obj_map[peer_id].del_peer = NULL;
@@ -674,7 +674,7 @@ void ol_rx_peer_unmap_handler(ol_txrx_pdev_handle pdev, uint16_t peer_id)
 		wlan_roam_debug_log(DEBUG_INVALID_VDEV_ID,
 				    DEBUG_PEER_UNMAP_EVENT,
 				    peer_id, NULL, NULL, ref_cnt, 0x101);
-		ol_txrx_dbg("peer already deleted, peer_id %d del_ref_cnt:%d del_peer_id_ref_cnt %d",
+        ol_txrx_dbg("peer already deleted, peer_id %d del_ref_cnt:%d del_peer_id_ref_cnt %d",
 			    peer_id, del_ref_cnt, ref_cnt);
 		return;
 	}
@@ -865,9 +865,9 @@ void ol_txrx_peer_find_display(ol_txrx_pdev_handle pdev, int indent)
 				      hash_list_elem) {
 				QDF_TRACE(QDF_MODULE_ID_TXRX,
 					  QDF_TRACE_LEVEL_INFO_LOW,
-					  "%*shash idx %d -> %pK ("QDF_MAC_ADDR_FMT")\n",
+					  "%*shash idx %d -> %pK ("QDF_MAC_ADDR_STR")\n",
 					indent + 4, " ", i, peer,
-					QDF_MAC_ADDR_REF(peer->mac_addr.raw));
+					QDF_MAC_ADDR_ARRAY(peer->mac_addr.raw));
 			}
 		}
 	}
