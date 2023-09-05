@@ -3,6 +3,7 @@
  * QTI Secure Execution Environment Communicator (QSEECOM) driver
  *
  * Copyright (c) 2012-2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
  */
 
 #define pr_fmt(fmt) "QSEECOM: %s: " fmt, __func__
@@ -1933,7 +1934,7 @@ static int qseecom_scale_bus_bandwidth(struct qseecom_dev_handle *data,
 		pr_err("copy_from_user failed\n");
 		return ret;
 	}
-	if (req_mode > HIGH) {
+	if (req_mode > HIGH || req_mode < QSEECOM_STATE_NOT_READY) {
 		pr_err("Invalid bandwidth mode (%d)\n", req_mode);
 		return -EINVAL;
 	}
@@ -3152,6 +3153,30 @@ static int qseecom_prepare_unload_app(struct qseecom_dev_handle *data)
 	pr_debug("prepare to unload app(%d)(%s), pending %d\n",
 		data->client.app_id, data->client.app_name,
 		data->client.unload_pending);
+
+	/* For keymaster we are not going to unload so no need to add it in
+	 * unload app pending list as soon as we identify release ion buffer
+	 * and return .
+	 */
+	if (!memcmp(data->client.app_name, "keymaste", strlen("keymaste"))) {
+		if (data->client.dmabuf) {
+			/* Each client will get same KM TA loaded handle but
+			 * will allocate separate shared buffer during
+			 * loading of TA, as client can't unload KM TA so we
+			 * will only free out shared buffer and return early
+			 * to avoid any ion buffer leak.
+			 */
+			qseecom_vaddr_unmap(data->client.sb_virt,
+				data->client.sgt, data->client.attach,
+				data->client.dmabuf);
+			MAKE_NULL(data->client.sgt,
+				data->client.attach, data->client.dmabuf);
+		}
+		__qseecom_free_tzbuf(&data->sglistinfo_shm);
+		data->released = true;
+		return 0;
+	}
+
 	if (data->client.unload_pending)
 		return 0;
 	entry = kzalloc(sizeof(*entry), GFP_KERNEL);

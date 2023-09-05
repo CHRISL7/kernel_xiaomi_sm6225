@@ -492,7 +492,7 @@ max3421_set_speed(struct usb_hcd *hcd, struct usb_device *dev)
 static void
 max3421_set_address(struct usb_hcd *hcd, struct usb_device *dev, int epnum)
 {
-	int rcvtog, sndtog; 
+	int rcvtog, sndtog;
 	u8 hctl;
 
 	/* setup new endpoint's toggle bits: */
