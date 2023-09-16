@@ -775,7 +775,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 	const struct qrtr_hdr_v2 *v2;
 	struct sk_buff *skb;
 	struct qrtr_cb *cb;
-	unsigned int size;
+        size_t size;
 	int errcode;
 	unsigned int ver;
 	size_t hdrlen;
@@ -1712,8 +1712,10 @@ static int qrtr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	plen = (len + 3) & ~3;
 	skb = sock_alloc_send_skb(sk, plen + QRTR_HDR_MAX_SIZE,
 				  msg->msg_flags & MSG_DONTWAIT, &rc);
-	if (!skb)
+	if (!skb) {
+		rc = -ENOMEM;
 		goto out_node;
+	}
 
 	skb_reserve(skb, QRTR_HDR_MAX_SIZE);
 
