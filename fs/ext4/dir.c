@@ -54,11 +54,11 @@ static int is_dx_dir(struct inode *inode)
 	return 0;
 }
 
-static bool is_fake_entry(struct inode *dir, ext4_lblk_t lblk,
+static bool is_fake_entry(struct inode *dir,
 			  unsigned int offset, unsigned int blocksize)
 {
 	/* Entries in the first block before this value refer to . or .. */
-	if (lblk == 0 && offset <= DOTDOT_OFFSET)
+	if (offset <= DOTDOT_OFFSET)
 		return true;
 	/* Check if this is likely the csum entry */
 	if (ext4_has_metadata_csum(dir->i_sb) && offset % blocksize ==
@@ -79,7 +79,6 @@ int __ext4_check_dir_entry(const char *function, unsigned int line,
 			   struct inode *dir, struct file *filp,
 			   struct ext4_dir_entry_2 *de,
 			   struct buffer_head *bh, char *buf, int size,
-			   ext4_lblk_t lblk,
 			   unsigned int offset)
 {
 	const char *error_msg = NULL;
@@ -87,8 +86,8 @@ int __ext4_check_dir_entry(const char *function, unsigned int line,
 						dir->i_sb->s_blocksize);
 	const int next_offset = ((char *) de - buf) + rlen;
 	unsigned int blocksize = dir->i_sb->s_blocksize;
-	bool fake = is_fake_entry(dir, lblk, offset, blocksize);
-	bool next_fake = is_fake_entry(dir, lblk, next_offset, blocksize);
+	bool fake = is_fake_entry(dir, offset, blocksize);
+	bool next_fake = is_fake_entry(dir, next_offset, blocksize);
 
 	if (unlikely(rlen < ext4_dir_rec_len(1, fake ? NULL : dir)))
 		error_msg = "rec_len is smaller than minimal";
@@ -114,13 +113,13 @@ int __ext4_check_dir_entry(const char *function, unsigned int line,
 				"bad entry in directory: %s - offset=%u, "
 				"inode=%u, rec_len=%d, lblk=%d, size=%d fake=%d",
 				error_msg, offset, le32_to_cpu(de->inode),
-				rlen, lblk, size, fake);
+				rlen, size, fake);
 	else
 		ext4_error_inode(dir, function, line, bh->b_blocknr,
 				"bad entry in directory: %s - offset=%u, "
 				"inode=%u, rec_len=%d, lblk=%d, size=%d fake=%d",
 				 error_msg, offset, le32_to_cpu(de->inode),
-				 rlen, lblk, size, fake);
+				 rlen, size, fake);
 
 	return 1;
 }
@@ -262,7 +261,7 @@ static int ext4_readdir(struct file *file, struct dir_context *ctx)
 			de = (struct ext4_dir_entry_2 *) (bh->b_data + offset);
 			if (ext4_check_dir_entry(inode, file, de, bh,
 						 bh->b_data, bh->b_size,
-						 map.m_lblk, offset)) {
+						 offset)) {
 				/*
 				 * On error, skip to the next block
 				 */
@@ -557,7 +556,7 @@ static int ext4_dx_readdir(struct file *file, struct dir_context *ctx)
 	struct dir_private_info *info = file->private_data;
 	struct inode *inode = file_inode(file);
 	struct fname *fname;
-	int	ret;
+	int ret = 0;
 
 	if (!info) {
 		info = ext4_htree_create_dir_info(file, ctx->pos);
@@ -605,7 +604,7 @@ static int ext4_dx_readdir(struct file *file, struct dir_context *ctx)
 						   info->curr_minor_hash,
 						   &info->next_hash);
 			if (ret < 0)
-				return ret;
+				goto finished;
 			if (ret == 0) {
 				ctx->pos = ext4_get_htree_eof(file);
 				break;
@@ -636,7 +635,7 @@ static int ext4_dx_readdir(struct file *file, struct dir_context *ctx)
 	}
 finished:
 	info->last_pos = ctx->pos;
-	return 0;
+	return ret < 0 ? ret : 0;
 }
 
 static int ext4_dir_open(struct inode * inode, struct file * filp)
@@ -666,7 +665,7 @@ int ext4_check_all_de(struct inode *dir, struct buffer_head *bh, void *buf,
 	top = buf + buf_size;
 	while ((char *) de < top) {
 		if (ext4_check_dir_entry(dir, NULL, de, bh,
-					 buf, buf_size, 0, offset))
+					 buf, buf_size, offset))
 			return -EFSCORRUPTED;
 		rlen = ext4_rec_len_from_disk(de->rec_len, buf_size);
 		de = (struct ext4_dir_entry_2 *)((char *)de + rlen);
