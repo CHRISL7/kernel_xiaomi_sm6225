@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# Compile script for topaz Kernel
+# Compile script for uvite Kernel
 # Copyright (C) 2020-2021 Adithya R.
 
 SECONDS=0 # builtin bash timer
-ZIPNAME="topaz-$(date '+%Y%m%d-%H%M').zip"
+ZIPNAME="uvite-$(date '+%Y%m%d-%H%M').zip"
 TC_DIR="$(pwd)/tc/clang-r450784e"
 AK3_DIR="$(pwd)/android/AnyKernel3"
 DEFCONFIG="vendor/spes-perf_defconfig"
