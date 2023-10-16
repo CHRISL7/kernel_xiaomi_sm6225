@@ -3585,7 +3585,7 @@ static int sm_fg_probe(struct i2c_client *client,
 	if(true != fg_check_device_id(client))
 	{
 		ret = -ENODEV; 
-		goto err_free; 	
+		goto err_0; 	
 	}
 
 	if (!hal_fg_init(client)) {
@@ -3618,7 +3618,7 @@ static int sm_fg_probe(struct i2c_client *client,
 		pr_err("unuse\n");
 	else {
 		pr_err("Failed to registe gpio interrupt\n");
-		goto err_free;
+		goto err_0;
 	}
 
 	if (client->irq) {
@@ -3661,7 +3661,7 @@ static int sm_fg_probe(struct i2c_client *client,
 
 //err_1:
 //	fg_psy_unregister(sm);
-err_free:
+err_0:
 	mutex_destroy(&sm->data_lock);
 	mutex_destroy(&sm->i2c_rw_lock);
 	devm_kfree(&client->dev,sm);
