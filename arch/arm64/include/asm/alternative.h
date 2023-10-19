@@ -121,7 +121,7 @@ static inline void apply_alternatives_module(void *start, size_t length) { }
 663:	\insn2
 664:	.org	. - (664b-663b) + (662b-661b)
 	.org	. - (662b-661b) + (664b-663b)
-	.previous
+	.popsection
 	.endif
 .endm
 

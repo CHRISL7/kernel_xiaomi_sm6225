@@ -148,16 +148,6 @@ EXPORT_SYMBOL_GPL(dm_bio_get_target_bio_nr);
 #define DM_NUMA_NODE NUMA_NO_NODE
 static int dm_numa_node = DM_NUMA_NODE;
 
-#define DEFAULT_SWAP_BIOS	(8 * 1048576 / PAGE_SIZE)
-static int swap_bios = DEFAULT_SWAP_BIOS;
-static int get_swap_bios(void)
-{
-	int latch = READ_ONCE(swap_bios);
-	if (unlikely(latch <= 0))
-		latch = DEFAULT_SWAP_BIOS;
-	return latch;
-}
-
 /*
  * For mempools pre-allocation at the table loading time.
  */
@@ -1878,7 +1868,6 @@ static void cleanup_mapped_device(struct mapped_device *md)
 	mutex_destroy(&md->suspend_lock);
 	mutex_destroy(&md->type_lock);
 	mutex_destroy(&md->table_devices_lock);
-	mutex_destroy(&md->swap_bios_lock);
 
 	dm_mq_cleanup_mapped_device(md);
 }
@@ -1952,10 +1941,6 @@ static struct mapped_device *alloc_dev(int minor)
 	init_waitqueue_head(&md->eventq);
 	init_completion(&md->kobj_holder.completion);
 	md->kworker_task = NULL;
-
-	md->swap_bios = get_swap_bios();
-	sema_init(&md->swap_bios_semaphore, md->swap_bios);
-	mutex_init(&md->swap_bios_lock);
 
 	md->disk->major = _major;
 	md->disk->first_minor = minor;
@@ -3427,9 +3412,6 @@ MODULE_PARM_DESC(reserved_bio_based_ios, "Reserved IOs in bio-based mempools");
 
 module_param(dm_numa_node, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(dm_numa_node, "NUMA node for DM device memory allocations");
-
-module_param(swap_bios, int, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(swap_bios, "Maximum allowed inflight swap IOs");
 
 MODULE_DESCRIPTION(DM_NAME " driver");
 MODULE_AUTHOR("Joe Thornber <dm-devel@redhat.com>");
