@@ -2578,12 +2578,15 @@ int tcp_disconnect(struct sock *sk, int flags)
 	struct tcp_sock *tp = tcp_sk(sk);
 	int old_state = sk->sk_state;
 	u32 seq;
+<<<<<<< HEAD
 
 	/* Deny disconnect if other threads are blocked in sk_wait_event()
 	 * or inet_wait_for_connect().
 	 */
 	if (sk->sk_wait_pending)
 		return -EBUSY;
+=======
+>>>>>>> 84e19e0e98b0273b865dd6a26a901c9c250d86e1
 
 	if (old_state != TCP_CLOSE)
 		tcp_set_state(sk, TCP_CLOSE);

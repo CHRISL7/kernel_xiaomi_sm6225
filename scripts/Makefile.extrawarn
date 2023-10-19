@@ -73,8 +73,11 @@ KBUILD_CFLAGS += $(call cc-disable-warning, format-zero-length)
 KBUILD_CFLAGS += $(call cc-disable-warning, uninitialized)
 KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
 KBUILD_CFLAGS += $(call cc-disable-warning, unaligned-access)
+<<<<<<< HEAD
 KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-int-cast)
 KBUILD_CFLAGS += $(call cc-disable-warning, void-pointer-to-int-cast)
+=======
+>>>>>>> 84e19e0e98b0273b865dd6a26a901c9c250d86e1
 KBUILD_CFLAGS += $(call cc-disable-warning, cast-function-type-strict)
 endif
 endif

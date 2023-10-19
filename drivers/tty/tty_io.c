@@ -2753,7 +2753,7 @@ void __do_SAK(struct tty_struct *tty)
 	struct task_struct *g, *p;
 	struct pid *session;
 	int		i;
-        unsigned long flags;
+	unsigned long flags;
 
 	if (!tty)
 		return;
