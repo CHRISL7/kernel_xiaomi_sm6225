@@ -3,6 +3,7 @@
 #define _IPV6_H
 
 #include <uapi/linux/ipv6.h>
+#include <uapi/linux/icmpv6.h>
 #include <linux/android_kabi.h>
 #include <uapi/linux/icmpv6.h>
 

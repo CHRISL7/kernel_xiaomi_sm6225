@@ -429,5 +429,10 @@ void mmc_remove_card(struct mmc_card *card)
 		host->cqe_enabled = false;
 	}
 
+	if (host->cqe_enabled) {
+		host->cqe_ops->cqe_disable(host);
+		host->cqe_enabled = false;
+	}
+
 	put_device(&card->dev);
 }
