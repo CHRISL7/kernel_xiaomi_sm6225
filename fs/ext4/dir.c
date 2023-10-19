@@ -30,8 +30,6 @@
 #include "ext4.h"
 #include "xattr.h"
 
-#define DOTDOT_OFFSET 12
-
 static int ext4_dx_readdir(struct file *, struct dir_context *);
 
 /**
@@ -54,15 +52,14 @@ static int is_dx_dir(struct inode *inode)
 	return 0;
 }
 
-static bool is_fake_entry(struct inode *dir,
-			  unsigned int offset, unsigned int blocksize)
+static bool is_fake_dir_entry(struct ext4_dir_entry_2 *de)
 {
-	/* Entries in the first block before this value refer to . or .. */
-	if (offset <= DOTDOT_OFFSET)
+	/* Check if . or .. , or skip if namelen is 0 */
+	if ((de->name_len > 0) && (de->name_len <= 2) && (de->name[0] == '.') &&
+	    (de->name[1] == '.' || de->name[1] == '\0'))
 		return true;
-	/* Check if this is likely the csum entry */
-	if (ext4_has_metadata_csum(dir->i_sb) && offset % blocksize ==
-				blocksize - sizeof(struct ext4_dir_entry_tail))
+	/* Check if this is a csum entry */
+	if (de->file_type == EXT4_FT_DIR_CSUM)
 		return true;
 	return false;
 }
@@ -85,9 +82,8 @@ int __ext4_check_dir_entry(const char *function, unsigned int line,
 	const int rlen = ext4_rec_len_from_disk(de->rec_len,
 						dir->i_sb->s_blocksize);
 	const int next_offset = ((char *) de - buf) + rlen;
-	unsigned int blocksize = dir->i_sb->s_blocksize;
-	bool fake = is_fake_entry(dir, offset, blocksize);
-	bool next_fake = is_fake_entry(dir, next_offset, blocksize);
+	bool fake = is_fake_dir_entry(de);
+	bool has_csum = ext4_has_metadata_csum(dir->i_sb);
 
 	if (unlikely(rlen < ext4_dir_rec_len(1, fake ? NULL : dir)))
 		error_msg = "rec_len is smaller than minimal";
@@ -99,7 +95,7 @@ int __ext4_check_dir_entry(const char *function, unsigned int line,
 	else if (unlikely(((char *) de - buf) + rlen > size))
 		error_msg = "directory entry overrun";
 	else if (unlikely(next_offset > size - ext4_dir_rec_len(1,
-						next_fake ? NULL : dir) &&
+						  has_csum ? NULL : dir) &&
 			  next_offset != size))
 		error_msg = "directory entry too close to block end";
 	else if (unlikely(le32_to_cpu(de->inode) >
@@ -111,13 +107,13 @@ int __ext4_check_dir_entry(const char *function, unsigned int line,
 	if (filp)
 		ext4_error_file(filp, function, line, bh->b_blocknr,
 				"bad entry in directory: %s - offset=%u, "
-				"inode=%u, rec_len=%d, lblk=%d, size=%d fake=%d",
+				"inode=%u, rec_len=%d, size=%d fake=%d",
 				error_msg, offset, le32_to_cpu(de->inode),
 				rlen, size, fake);
 	else
 		ext4_error_inode(dir, function, line, bh->b_blocknr,
 				"bad entry in directory: %s - offset=%u, "
-				"inode=%u, rec_len=%d, lblk=%d, size=%d fake=%d",
+				"inode=%u, rec_len=%d, size=%d fake=%d",
 				 error_msg, offset, le32_to_cpu(de->inode),
 				 rlen, size, fake);
 
