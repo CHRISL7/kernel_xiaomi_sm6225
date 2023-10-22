@@ -2761,6 +2761,7 @@ void __do_SAK(struct tty_struct *tty)
 	spin_lock_irqsave(&tty->ctrl_lock, flags);
 	session = get_pid(tty->session);
 	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
+
 	tty_ldisc_flush(tty);
 
 	tty_driver_flush_buffer(tty);

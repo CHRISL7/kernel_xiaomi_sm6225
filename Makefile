@@ -435,7 +435,6 @@ USERINCLUDE    := \
 # Use LINUXINCLUDE when you must reference the include/ directory.
 # Needed to be compatible with the O= option
 LINUXINCLUDE    := \
-		-I$(srctree) \
 		-I$(srctree)/arch/$(SRCARCH)/include \
 		-I$(objtree)/arch/$(SRCARCH)/include/generated \
 		$(if $(KBUILD_SRC), -I$(srctree)/include) \
@@ -1358,7 +1357,7 @@ headers_install: __headers
 	  $(error Headers not exportable for the $(SRCARCH) architecture))
 	$(Q)$(MAKE) $(hdr-inst)=include/uapi dst=include
 	$(Q)$(MAKE) $(hdr-inst)=arch/$(SRCARCH)/include/uapi $(hdr-dst)
-	$(Q)$(MAKE) $(hdr-inst)=techpack/audio/include/uapi dst=techpack/audio/include
+	$(Q)$(MAKE) $(hdr-inst)=techpack
 
 PHONY += headers_check_all
 headers_check_all: headers_install_all
@@ -1368,7 +1367,7 @@ PHONY += headers_check
 headers_check: headers_install
 	$(Q)$(MAKE) $(hdr-inst)=include/uapi dst=include HDRCHECK=1
 	$(Q)$(MAKE) $(hdr-inst)=arch/$(SRCARCH)/include/uapi $(hdr-dst) HDRCHECK=1
-	$(Q)$(MAKE) $(hdr-inst)=techpack/audio/include/uapi dst=techpack/audio/include HDRCHECK=1
+	$(Q)$(MAKE) $(hdr-inst)=techpack HDRCHECK=1
 
 # ---------------------------------------------------------------------------
 # Kernel selftest

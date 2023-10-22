@@ -1913,4 +1913,3 @@ config RAVE_SP_CORE
 
 endmenu
 endif
-source "drivers/mfd/maxim/Kconfig"

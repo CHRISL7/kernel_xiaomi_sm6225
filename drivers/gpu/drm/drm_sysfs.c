@@ -5,7 +5,6 @@
  *               does not allow adding attributes.
  *
  * Copyright (c) 2004 Jon Smirl <jonsmirl@gmail.com>
- * Copyright (C) 2021 XiaoMi, Inc.
  * Copyright (c) 2003-2004 Greg Kroah-Hartman <greg@kroah.com>
  * Copyright (c) 2003-2004 IBM Corp.
  *
@@ -19,16 +18,12 @@
 #include <linux/err.h>
 #include <linux/export.h>
 
-#include <drm/drm_encoder.h>
 #include <drm/drm_sysfs.h>
 #include <drm/drmP.h>
 #include "drm_internal.h"
-#include "drm_internal_mi.h"
-
 
 #define to_drm_minor(d) dev_get_drvdata(d)
 #define to_drm_connector(d) dev_get_drvdata(d)
-
 
 /**
  * DOC: overview
@@ -49,7 +44,6 @@ static struct device_type drm_sysfs_device_minor = {
 };
 
 struct class *drm_class;
-struct device *connector_kdev;
 
 static char *drm_devnode(struct device *dev, umode_t *mode)
 {
@@ -235,90 +229,16 @@ static ssize_t modes_show(struct device *device,
 	return written;
 }
 
-#ifdef CONFIG_TARGET_PROJECT_K7T
-extern int drm_get_panel_info(struct drm_bridge *bridge, char *name);
-static ssize_t panel_info_show(struct device *device,
-			    struct device_attribute *attr,
-			   char *buf)
-{
-	int written = 0;
-	char pname[128] = {0};
-	char pname_temp[128] = {0};
-	struct drm_connector *connector = NULL;
-	struct drm_encoder *encoder = NULL;
-	struct drm_bridge *bridge = NULL;
-
-	connector = to_drm_connector(device);
-	if (!connector)
-		return written;
-
-	encoder = connector->encoder;
-	if (!encoder)
-		return written;
-
-	bridge = encoder->bridge;
-	if (!bridge)
-		return written;
-
-	written = drm_get_panel_info(bridge, pname);
-	if (written)
-	{
-		strncpy(pname_temp, pname+10, 32);
-		pname_temp[33] = '\0';
-		return snprintf(buf, PAGE_SIZE, "panel_name=%s_display\n", pname_temp);
-	}
-	return written;
-}
-#endif
-
-#ifdef CONFIG_TARGET_PROJECT_C3Q
-extern int drm_get_panel_info(struct drm_bridge *bridge, char *name);
-static ssize_t panel_info_show(struct device *device,
-			    struct device_attribute *attr,
-			   char *buf)
-{
-	int written = 0;
-	char pname[128] = {0};
-	char pname_temp[128] = {0};
-	struct drm_connector *connector = NULL;
-	struct drm_encoder *encoder = NULL;
-	struct drm_bridge *bridge = NULL;
-
-	connector = to_drm_connector(device);
-	if (!connector)
-		return written;
-
-	encoder = connector->encoder;
-	if (!encoder)
-		return written;
-
-	bridge = encoder->bridge;
-	if (!bridge)
-		return written;
-
-	written = drm_get_panel_info(bridge, pname);
-	if (written)
-	{
-		strncpy(pname_temp, pname+10, 33);
-		pname_temp[34] = '\0';
-		return snprintf(buf, PAGE_SIZE, "panel_name=%s_display\n", pname_temp);
-	}
-	return written;
-}
-#endif
-
 static DEVICE_ATTR_RW(status);
 static DEVICE_ATTR_RO(enabled);
 static DEVICE_ATTR_RO(dpms);
 static DEVICE_ATTR_RO(modes);
-static DEVICE_ATTR_RO(panel_info);
 
 static struct attribute *connector_dev_attrs[] = {
 	&dev_attr_status.attr,
 	&dev_attr_enabled.attr,
 	&dev_attr_dpms.attr,
 	&dev_attr_modes.attr,
-	&dev_attr_panel_info.attr,
 	NULL
 };
 
@@ -358,9 +278,6 @@ int drm_sysfs_connector_add(struct drm_connector *connector)
 					  connector->name);
 	DRM_DEBUG("adding \"%s\" to sysfs\n",
 		  connector->name);
-
-	if (!connector_kdev)
-		connector_kdev = connector->kdev;
 
 	if (IS_ERR(connector->kdev)) {
 		DRM_ERROR("failed to register connector device: %ld\n", PTR_ERR(connector->kdev));

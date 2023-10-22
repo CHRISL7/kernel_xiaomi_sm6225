@@ -720,6 +720,10 @@ struct sched_dl_entity {
 	 * task has to wait for a replenishment to be performed at the
 	 * next firing of dl_timer.
 	 *
+	 * @dl_boosted tells if we are boosted due to DI. If so we are
+	 * outside bandwidth enforcement mechanism (but only until we
+	 * exit the critical section);
+	 *
 	 * @dl_yielded tells if task gave up the CPU before consuming
 	 * all its available runtime during the last job.
 	 *
@@ -734,6 +738,7 @@ struct sched_dl_entity {
 	 * overruns.
 	 */
 	unsigned int			dl_throttled      : 1;
+	unsigned int			dl_boosted        : 1;
 	unsigned int			dl_yielded        : 1;
 	unsigned int			dl_non_contending : 1;
 	unsigned int			dl_overrun	  : 1;
@@ -752,15 +757,6 @@ struct sched_dl_entity {
 	 * time.
 	 */
 	struct hrtimer inactive_timer;
-
-#ifdef CONFIG_RT_MUTEXES
-	/*
-	 * Priority Inheritance. When a DEADLINE scheduling entity is boosted
-	 * pi_se points to the donor, otherwise points to the dl_se it belongs
-	 * to (the original one/itself).
-	 */
-	struct sched_dl_entity *pi_se;
-#endif
 };
 
 #ifdef CONFIG_UCLAMP_TASK
@@ -900,9 +896,6 @@ struct task_struct {
 
 #ifdef CONFIG_CGROUP_SCHED
 	struct task_group		*sched_task_group;
-#endif
-#ifdef CONFIG_SCHED_TUNE
-	int				stune_idx;
 #endif
 	struct sched_dl_entity		dl;
 
@@ -1281,8 +1274,6 @@ struct task_struct {
 #endif
 	struct list_head		pi_state_list;
 	struct futex_pi_state		*pi_state_cache;
-	struct mutex			futex_exit_mutex;
-	unsigned int			futex_state;
 #endif
 #ifdef CONFIG_PERF_EVENTS
 	struct perf_event_context	*perf_event_ctxp[perf_nr_task_contexts];
@@ -1501,12 +1492,30 @@ struct task_struct {
 	/* task is frozen/stopped (used by the cgroup freezer) */
 	ANDROID_KABI_USE(1, unsigned frozen:1);
 
-	ANDROID_KABI_RESERVE(2);
+	/* 095444fad7e3 ("futex: Replace PF_EXITPIDONE with a state") */
+	ANDROID_KABI_USE(2, unsigned int futex_state);
+
+	/*
+	 * f9b0c6c556db ("futex: Add mutex around futex exit")
+	 * A struct mutex takes 32 bytes, or 4 64bit entries, so pick off
+	 * 4 of the reserved members, and replace them with a struct mutex.
+	 * Do the GENKSYMS hack to work around the CRC issues
+	 */
+#ifdef __GENKSYMS__
 	ANDROID_KABI_RESERVE(3);
 	ANDROID_KABI_RESERVE(4);
 	ANDROID_KABI_RESERVE(5);
 	ANDROID_KABI_RESERVE(6);
+#else
+	struct mutex			futex_exit_mutex;
+#endif
+
+	/* bca62a0ae565 ("sched/tune: Fix improper accounting of tasks") */
+#ifdef CONFIG_SCHED_TUNE
+	ANDROID_KABI_USE(7, int stune_idx);
+#else
 	ANDROID_KABI_RESERVE(7);
+#endif
 	ANDROID_KABI_RESERVE(8);
 
 	/*

@@ -600,7 +600,6 @@ static long inet_wait_for_connect(struct sock *sk, long timeo, int writebias)
 
 	add_wait_queue(sk_sleep(sk), &wait);
 	sk->sk_write_pending += writebias;
-	sk->sk_wait_pending++;
 
 	/* Basic assumption: if someone sets sk->sk_err, he _must_
 	 * change state of the socket from TCP_SYN_*.
@@ -616,7 +615,6 @@ static long inet_wait_for_connect(struct sock *sk, long timeo, int writebias)
 	}
 	remove_wait_queue(sk_sleep(sk), &wait);
 	sk->sk_write_pending -= writebias;
-	sk->sk_wait_pending--;
 	return timeo;
 }
 
@@ -889,7 +887,7 @@ int inet_shutdown(struct socket *sock, int how)
 		   EPOLLHUP, even on eg. unconnected UDP sockets -- RR */
 		/* fall through */
 	default:
-		WRITE_ONCE(sk->sk_shutdown, sk->sk_shutdown | how);
+		sk->sk_shutdown |= how;
 		if (sk->sk_prot->shutdown)
 			sk->sk_prot->shutdown(sk, how);
 		break;
@@ -1690,7 +1688,12 @@ static const struct net_protocol igmp_protocol = {
 };
 #endif
 
-static const struct net_protocol tcp_protocol = {
+/* thinking of making this const? Don't.
+ * early_demux can change based on sysctl.
+ */
+static struct net_protocol tcp_protocol = {
+	.early_demux	=	tcp_v4_early_demux,
+	.early_demux_handler =  tcp_v4_early_demux,
 	.handler	=	tcp_v4_rcv,
 	.err_handler	=	tcp_v4_err,
 	.no_policy	=	1,
@@ -1698,7 +1701,12 @@ static const struct net_protocol tcp_protocol = {
 	.icmp_strict_tag_validation = 1,
 };
 
-static const struct net_protocol udp_protocol = {
+/* thinking of making this const? Don't.
+ * early_demux can change based on sysctl.
+ */
+static struct net_protocol udp_protocol = {
+	.early_demux =	udp_v4_early_demux,
+	.early_demux_handler =	udp_v4_early_demux,
 	.handler =	udp_rcv,
 	.err_handler =	udp_err,
 	.no_policy =	1,

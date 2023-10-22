@@ -841,7 +841,6 @@ static void dwc3_set_incr_burst_type(struct dwc3 *dwc)
 	ret = device_property_read_u32_array(dev,
 			"snps,incr-burst-type-adjustment", vals, ntype);
 	if (ret) {
-		kfree(vals);
 		dev_err(dev, "Error to get property\n");
 		return;
 	}

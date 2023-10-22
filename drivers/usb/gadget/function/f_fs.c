@@ -1239,12 +1239,6 @@ static ssize_t ffs_epfile_write_iter(struct kiocb *kiocb, struct iov_iter *from)
 
 	ffs_log("enter");
 
-	if(ffs->func == NULL)
-	{
-		ffs_log("exit: func = NULL so we already set alt to -1");
-		return -ENOMEM;
-	}
-
 	if (!is_sync_kiocb(kiocb)) {
 		p = kzalloc(sizeof(io_data), GFP_KERNEL);
 		if (unlikely(!p))
@@ -1288,12 +1282,6 @@ static ssize_t ffs_epfile_read_iter(struct kiocb *kiocb, struct iov_iter *to)
 	ENTER();
 
 	ffs_log("enter");
-
-	if(ffs->func == NULL)
-	{
-		ffs_log("exit: func = NULL so we already set alt to -1");
-		return -ENOMEM;
-	}
 
 	if (!is_sync_kiocb(kiocb)) {
 		p = kzalloc(sizeof(io_data), GFP_KERNEL);
@@ -1719,9 +1707,6 @@ ffs_fs_mount(struct file_system_type *t, int flags,
 		else
 			return ERR_PTR((long) ffs);
 	}
-
-	if (IS_ERR(ffs))
-		return ERR_PTR(-EBUSY);
 
 	ffs->file_perms = data.perms;
 	ffs->no_disconnect = data.no_disconnect;
@@ -3272,7 +3257,8 @@ static inline struct f_fs_opts *ffs_do_functionfs_bind(struct usb_function *f,
 	struct ffs_function *func = ffs_func_from_usb(f);
 	struct f_fs_opts *ffs_opts =
 		container_of(f->fi, struct f_fs_opts, func_inst);
-	struct ffs_data *ffs;
+	struct ffs_data *ffs = ffs_opts->dev->ffs_data;
+	struct ffs_data *ffs_data;
 	int ret;
 
 	ENTER();
@@ -3287,13 +3273,13 @@ static inline struct f_fs_opts *ffs_do_functionfs_bind(struct usb_function *f,
 	if (!ffs_opts->no_configfs)
 		ffs_dev_lock();
 	ret = ffs_opts->dev->desc_ready ? 0 : -ENODEV;
-	ffs = ffs_opts->dev->ffs_data;
+	ffs_data = ffs_opts->dev->ffs_data;
 	if (!ffs_opts->no_configfs)
 		ffs_dev_unlock();
 	if (ret)
 		return ERR_PTR(ret);
 
-	func->ffs = ffs;
+	func->ffs = ffs_data;
 	func->conf = c;
 	func->gadget = c->cdev->gadget;
 

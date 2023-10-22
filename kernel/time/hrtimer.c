@@ -1156,13 +1156,13 @@ static int __hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim,
 		new_base = base;
 	}
 
-	first = enqueue_hrtimer(timer, new_base, mode);
-	if (!force_local)
-		return first;
-
 	/* Update pinned state */
 	timer->state &= ~HRTIMER_STATE_PINNED;
 	timer->state |= (!!(mode & HRTIMER_MODE_PINNED)) << HRTIMER_PINNED_SHIFT;
+
+	first = enqueue_hrtimer(timer, new_base, mode);
+	if (!force_local)
+		return first;
 
 	/*
 	 * Timer was forced to stay on the current CPU to avoid
