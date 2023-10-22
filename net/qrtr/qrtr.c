@@ -740,7 +740,7 @@ static struct sk_buff *qrtr_get_backup(size_t len)
 		skb = skb_dequeue(&qrtr_backup_hi);
 
 	if (skb)
-		queue_work(system_power_efficient_wq, &qrtr_backup_work);
+		queue_work(system_unbound_wq, &qrtr_backup_work);
 
 	return skb;
 }
@@ -750,7 +750,7 @@ static void qrtr_backup_init(void)
 	skb_queue_head_init(&qrtr_backup_lo);
 	skb_queue_head_init(&qrtr_backup_hi);
 	INIT_WORK(&qrtr_backup_work, qrtr_alloc_backup);
-	queue_work(system_power_efficient_wq, &qrtr_backup_work);
+	queue_work(system_unbound_wq, &qrtr_backup_work);
 }
 
 static void qrtr_backup_deinit(void)
@@ -775,19 +775,14 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 	const struct qrtr_hdr_v2 *v2;
 	struct sk_buff *skb;
 	struct qrtr_cb *cb;
-<<<<<<< HEAD
-        size_t size;
-	int errcode;
-=======
 	size_t size;
->>>>>>> 84e19e0e98b0273b865dd6a26a901c9c250d86e1
+	int errcode;
 	unsigned int ver;
 	size_t hdrlen;
 
 	if (len == 0 || len & 3)
 		return -EINVAL;
 
-<<<<<<< HEAD
 	skb = alloc_skb_with_frags(sizeof(*v1), len, 0, &errcode, GFP_ATOMIC);
 	if (!skb) {
 		skb = qrtr_get_backup(len);
@@ -796,11 +791,6 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 			return -ENOMEM;
 		}
 	}
-=======
-	skb = __netdev_alloc_skb(NULL, len, GFP_ATOMIC | __GFP_NOWARN);
-	if (!skb)
-		return -ENOMEM;
->>>>>>> 84e19e0e98b0273b865dd6a26a901c9c250d86e1
 
 	skb_reserve(skb, sizeof(*v1));
 	cb = (struct qrtr_cb *)skb->cb;
@@ -849,12 +839,9 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 		goto err;
 	}
 
-<<<<<<< HEAD
 	if (cb->dst_port == QRTR_PORT_CTRL_LEGACY)
 		cb->dst_port = QRTR_PORT_CTRL;
 
-=======
->>>>>>> 84e19e0e98b0273b865dd6a26a901c9c250d86e1
 	if (!size || len != ALIGN(size, 4) + hdrlen)
 		goto err;
 
@@ -1850,10 +1837,6 @@ static int qrtr_recvmsg(struct socket *sock, struct msghdr *msg,
 		 */
 		memset(addr, 0, sizeof(*addr));
 
-<<<<<<< HEAD
-=======
-		cb = (struct qrtr_cb *)skb->cb;
->>>>>>> 84e19e0e98b0273b865dd6a26a901c9c250d86e1
 		addr->sq_family = AF_QIPCRTR;
 		addr->sq_node = cb->src_node;
 		addr->sq_port = cb->src_port;
