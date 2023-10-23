@@ -160,7 +160,7 @@ static int posix_timer_add(struct k_itimer *timer)
 {
 	struct signal_struct *sig = current->signal;
 	int first_free_id = sig->posix_timer_id;
-	int struct hlist_head *head;
+	struct hlist_head *head;
 	int ret = -ENOENT;
 
 	do {
