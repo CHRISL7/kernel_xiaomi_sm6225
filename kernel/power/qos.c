@@ -370,7 +370,6 @@ int pm_qos_update_target(struct pm_qos_constraints *c, struct plist_node *node,
 	curr_value = pm_qos_get_value(c);
 	cpumask_clear(&cpus);
 	pm_qos_set_value(c, curr_value);
-	ret = pm_qos_set_value_for_cpus(c, &cpus);
 	ret = pm_qos_set_value_for_cpus(c, dev_req, &cpus);
 
 	spin_unlock_irqrestore(&pm_qos_lock, flags);
@@ -586,7 +585,7 @@ static void pm_qos_irq_notify(struct irq_affinity_notify *notify,
 
 	if (affinity_changed)
 		pm_qos_update_target(c, &req->node, PM_QOS_UPDATE_REQ,
-				     req->node.prio, false)
+				     req->node.prio, false);
 }
 #endif
 
