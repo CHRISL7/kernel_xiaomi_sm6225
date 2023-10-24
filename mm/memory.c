@@ -3078,44 +3078,6 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
 	 * Take out anonymous pages first, anonymous shared vmas are
 	 * not dirty accountable.
 	 */
-<<<<<<< HEAD
-	if (PageAnon(vmf->page) && !PageKsm(vmf->page)) {
-		int total_map_swapcount;
-		if (!trylock_page(vmf->page)) {
-			get_page(vmf->page);
-			pte_unmap_unlock(vmf->pte, vmf->ptl);
-			lock_page(vmf->page);
-			if (!pte_map_lock(vmf)) {
-				unlock_page(vmf->page);
-				put_page(vmf->page);
-				return VM_FAULT_RETRY;
-			}
-			if (!pte_same(*vmf->pte, vmf->orig_pte)) {
-				unlock_page(vmf->page);
-				pte_unmap_unlock(vmf->pte, vmf->ptl);
-				put_page(vmf->page);
-				return 0;
-			}
-			put_page(vmf->page);
-		}
-		if (reuse_swap_page(vmf->page, &total_map_swapcount)) {
-			if (total_map_swapcount == 1) {
-				/*
-				 * The page is all ours. Move it to
-				 * our anon_vma so the rmap code will
-				 * not search our parent or siblings.
-				 * Protected against the rmap code by
-				 * the page lock.
-				 */
-				page_move_anon_rmap(vmf->page, vma);
-			}
-			unlock_page(vmf->page);
-			wp_page_reuse(vmf);
-			return VM_FAULT_WRITE;
-		}
-		unlock_page(vmf->page);
-	} else if (unlikely((vmf->vma_flags & (VM_WRITE|VM_SHARED)) ==
-=======
 	if (PageAnon(vmf->page)) {
 		struct page *page = vmf->page;
 
@@ -3136,8 +3098,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
 		unlock_page(page);
 		wp_page_reuse(vmf);
 		return VM_FAULT_WRITE;
-	} else if (unlikely((vma->vm_flags & (VM_WRITE|VM_SHARED)) ==
->>>>>>> 84e19e0e98b0273b865dd6a26a901c9c250d86e1
+	} else if (unlikely((vmf->vma_flags & (VM_WRITE|VM_SHARED)) ==
 					(VM_WRITE|VM_SHARED))) {
 		return wp_page_shared(vmf);
 	}
