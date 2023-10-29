@@ -350,7 +350,7 @@
 	};
 
 	chosen {
-		bootargs = "noirqdebug nodebugmon rcu_nocbs=0-7 kpti=off";
+		bootargs = "rcupdate.rcu_expedited=1 rcu_nocbs=0-7 kpti=off";
 	};
 
 	firmware: firmware {
@@ -374,7 +374,6 @@
 			};
 		};
 	};
-	/delete-node/ android;
 
 	reserved_memory: reserved-memory {
 		#address-cells = <2>;

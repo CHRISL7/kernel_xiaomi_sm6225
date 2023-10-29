@@ -2049,7 +2049,7 @@ static void mmc_blk_mq_dec_in_flight(struct mmc_queue *mq,
 	spin_lock_irqsave(q->queue_lock, flags);
 
 	mq->in_flight[issue_type] -= 1;
-	atomic_dec(&host->active_reqs);
+        atomic_dec(&host->active_reqs);
 
 	put_card = (mmc_tot_in_flight(mq) == 0);
 

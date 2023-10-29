@@ -740,7 +740,7 @@ static struct sk_buff *qrtr_get_backup(size_t len)
 		skb = skb_dequeue(&qrtr_backup_hi);
 
 	if (skb)
-		queue_work(system_power_efficient_wq, &qrtr_backup_work);
+		queue_work(system_unbound_wq, &qrtr_backup_work);
 
 	return skb;
 }
@@ -750,7 +750,7 @@ static void qrtr_backup_init(void)
 	skb_queue_head_init(&qrtr_backup_lo);
 	skb_queue_head_init(&qrtr_backup_hi);
 	INIT_WORK(&qrtr_backup_work, qrtr_alloc_backup);
-	queue_work(system_power_efficient_wq, &qrtr_backup_work);
+	queue_work(system_unbound_wq, &qrtr_backup_work);
 }
 
 static void qrtr_backup_deinit(void)
@@ -775,7 +775,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 	const struct qrtr_hdr_v2 *v2;
 	struct sk_buff *skb;
 	struct qrtr_cb *cb;
-	size_t size;
+        size_t size;
 	int errcode;
 	unsigned int ver;
 	size_t hdrlen;

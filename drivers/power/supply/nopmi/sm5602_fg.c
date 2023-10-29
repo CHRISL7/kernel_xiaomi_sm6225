@@ -40,6 +40,15 @@
 #include <linux/pmic-voter.h>//"pmic-voter.h"
 //#include "step-chg-jeita.h"
 
+#if 1  /*only for debug*/
+#undef pr_debug
+#define pr_debug pr_err
+#undef pr_info
+#define pr_info pr_err
+#undef dev_dbg
+#define dev_dbg dev_err
+#endif
+
 #define	INVALID_REG_ADDR	0xFF
 #define   RET_ERR -1
 
@@ -2922,6 +2931,11 @@ static bool fg_init(struct i2c_client *client)
 	struct sm_fg_chip *sm = i2c_get_clientdata(client);
 
 	/*sm5602 i2c read check*/
+	ret = fg_get_device_id(client);
+	if (ret < 0) {
+		pr_err("%s: fail to do i2c read(%d)\n", __func__, ret);
+		return false;
+	}
 
 	if (fg_check_reg_init_need(client)) {
 		ret = fg_reset(sm);
@@ -3400,16 +3414,8 @@ static int fg_battery_parse_dt(struct sm_fg_chip *sm)
 bool hal_fg_init(struct i2c_client *client)
 {
 	struct sm_fg_chip *sm = i2c_get_clientdata(client);
-	int ret = 0;
 
 	pr_info("sm5602 hal_fg_init...\n");
-
-	ret = fg_get_device_id(client);
-	if (ret < 0) {
-		pr_err("%s: fail to do i2c read(%d)\n", __func__, ret);
-		return false;
-	}
-
 	mutex_lock(&sm->data_lock);
 	if (client->dev.of_node) {
 		/* Load common data from DTS*/
@@ -3585,13 +3591,13 @@ static int sm_fg_probe(struct i2c_client *client,
 	if(true != fg_check_device_id(client))
 	{
 		ret = -ENODEV; 
-		goto err_0; 	
+		goto err_free; 	
 	}
 
 	if (!hal_fg_init(client)) {
 	    pr_err("Failed to Initialize Fuelgauge\n");
-		ret = -EIO;
-		goto err_0; 	
+		ret = -ENODEV; 
+        goto err_free; 	
 	}
 
 	fg_set_fastcharge_mode(sm, false);
@@ -3618,7 +3624,7 @@ static int sm_fg_probe(struct i2c_client *client,
 		pr_err("unuse\n");
 	else {
 		pr_err("Failed to registe gpio interrupt\n");
-		goto err_0;
+		goto err_free;
 	}
 
 	if (client->irq) {
@@ -3661,7 +3667,7 @@ static int sm_fg_probe(struct i2c_client *client,
 
 //err_1:
 //	fg_psy_unregister(sm);
-err_0:
+err_free:
 	mutex_destroy(&sm->data_lock);
 	mutex_destroy(&sm->i2c_rw_lock);
 	devm_kfree(&client->dev,sm);

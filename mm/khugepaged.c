@@ -1311,7 +1311,7 @@ static void retract_page_tables(struct address_space *mapping, pgoff_t pgoff)
 				spinlock_t *ptl;
 				unsigned long end = addr + HPAGE_PMD_SIZE;
 
-				vm_write_begin(vma);
+                                vm_write_begin(vma);
 				mmu_notifier_invalidate_range_start(mm, addr,
 								    end);
 				ptl = pmd_lock(mm, pmd);

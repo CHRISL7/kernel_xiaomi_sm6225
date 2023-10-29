@@ -166,7 +166,6 @@ static int posix_timer_add(struct k_itimer *timer)
 	do {
 		spin_lock(&hash_lock);
 		head = &posix_timers_hashtable[hash(sig, sig->posix_timer_id)];
-		
 		if (!__posix_timers_find(head, sig, sig->posix_timer_id)) {
 			hlist_add_head_rcu(&timer->t_hash, head);
 			ret = sig->posix_timer_id;

@@ -396,7 +396,7 @@ static inline int usb_ep_fifo_status(struct usb_ep *ep)
 static inline void usb_ep_fifo_flush(struct usb_ep *ep)
 { }
 
-static inline int usb_gsi_ep_op(struct usb_ep *ep,
+static int usb_gsi_ep_op(struct usb_ep *ep,
 		struct usb_gsi_request *req, enum gsi_ep_op op)
 { return 0; }
 #endif /* USB_GADGET */
@@ -545,17 +545,13 @@ struct usb_gadget {
 	unsigned			connected:1;
 	unsigned			lpm_capable:1;
 	unsigned			remote_wakeup:1;
-
-#ifdef __GENKSYMS__
-	ANDROID_KABI_RESERVE(1);
-#else
-	bool				bam2bam_func_enabled:1;
+	bool				bam2bam_func_enabled;
 	u32				extra_buf_alloc;
-	bool				l1_supported:1;
-	bool				is_chipidea:1;
-	bool				self_powered:1;
-#endif
+	bool				l1_supported;
+	bool				is_chipidea;
+	bool				self_powered;
 
+	ANDROID_KABI_RESERVE(1);
 	ANDROID_KABI_RESERVE(2);
 	ANDROID_KABI_RESERVE(3);
 	ANDROID_KABI_RESERVE(4);
@@ -707,8 +703,7 @@ static inline int usb_gadget_frame_number(struct usb_gadget *gadget)
 { return 0; }
 static inline int usb_gadget_wakeup(struct usb_gadget *gadget)
 { return 0; }
-static inline int usb_gadget_func_wakeup(struct usb_gadget *gadget,
-					 int interface_id)
+static int usb_gadget_func_wakeup(struct usb_gadget *gadget, int interface_id)
 { return 0; }
 static inline int usb_gadget_set_selfpowered(struct usb_gadget *gadget)
 { return 0; }

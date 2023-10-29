@@ -20,8 +20,8 @@
  */
 #define DEFAULT_SCHED_RAVG_WINDOW (3333333 * 6)
 #else
-/* Default window size (in ns) = 8ms */
-#define DEFAULT_SCHED_RAVG_WINDOW 8000000
+/* Default window size (in ns) = 20ms */
+#define DEFAULT_SCHED_RAVG_WINDOW 20000000
 #endif
 
 /* Max window size (in ns) = 1s */
@@ -489,7 +489,7 @@ static inline bool prefer_spread_on_idle(int cpu, bool new_ilb)
 
 #else /* CONFIG_SCHED_WALT */
 
-static inline bool prefer_spread_on_idle(int cpu, bool new_ilb)
+static inline bool prefer_spread_on_idle(int cpu)
 {
 	return false;
 }

@@ -267,7 +267,7 @@ static const struct file_operations pm_qos_debug_fops = {
 };
 
 static inline int pm_qos_set_value_for_cpus(struct pm_qos_constraints *c,
-					     bool dev_req, struct cpumask *cpus)
+		bool dev_req, struct cpumask *cpus)
 {
 	struct pm_qos_request *req = NULL;
 	int cpu;
@@ -281,7 +281,7 @@ static inline int pm_qos_set_value_for_cpus(struct pm_qos_constraints *c,
 	if (c != pm_qos_array[PM_QOS_CPU_DMA_LATENCY]->constraints)
 		return -EINVAL;
 
-    /*
+        /*
 	 * pm_qos_set_value_for_cpus expects all c->list elements to be of type
 	 * pm_qos_request, however requests from device will contain elements
 	 * of type dev_pm_qos_request.
@@ -584,8 +584,8 @@ static void pm_qos_irq_notify(struct irq_affinity_notify *notify,
 	spin_unlock_irqrestore(&pm_qos_lock, flags);
 
 	if (affinity_changed)
-		pm_qos_update_target(c, &req->node, PM_QOS_UPDATE_REQ,
-				     req->node.prio, false);
+	pm_qos_update_target(c, &req->node, PM_QOS_UPDATE_REQ, req->node.prio,
+			false);
 }
 #endif
 

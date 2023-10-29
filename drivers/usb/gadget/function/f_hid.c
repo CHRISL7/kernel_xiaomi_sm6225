@@ -454,11 +454,6 @@ static ssize_t f_hidg_write(struct file *file, const char __user *buffer,
 
 	spin_lock_irqsave(&hidg->write_spinlock, flags);
 
-	if (!hidg->req) {
-		spin_unlock_irqrestore(&hidg->write_spinlock, flags);
-		return -ESHUTDOWN;
-	}
-
 #define WRITE_COND (!hidg->write_pending || !hidg->bound)
 try_again:
 	/* write queue */
@@ -575,7 +570,8 @@ static void hidg_destroy(struct kref *kref)
 {
 	struct f_hidg *hidg = container_of(kref, struct f_hidg, kref);
 
-	put_device(&hidg->dev);
+	kfree(hidg->report_desc);
+	kfree(hidg);
 }
 
 static int f_hidg_release(struct inode *inode, struct file *fd)
@@ -736,10 +732,8 @@ static int hidg_setup(struct usb_function *f,
 	case ((USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE) << 8
 		  | HID_REQ_SET_REPORT):
 		VDBG(cdev, "set_report | wLength=%d\n", ctrl->wLength);
-		if (hidg->use_out_ep)
-			goto stall;
+		req->context = hidg;
 		req->complete = hidg_ssreport_complete;
-		req->context  = hidg;
 		goto respond;
 		break;
 
