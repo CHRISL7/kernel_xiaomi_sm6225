@@ -115,7 +115,7 @@ struct detailed_data_monitor_range {
 			u8 supported_scalings;
 			u8 preferred_refresh;
 		} __attribute__((packed)) cvt;
-	} __attribute__((packed)) formula;
+	} formula;
 } __attribute__((packed));
 
 struct detailed_data_wpindex {
@@ -148,7 +148,7 @@ struct detailed_non_pixel {
 		struct detailed_data_wpindex color;
 		struct std_timing timings[6];
 		struct cvt_timing cvt[4];
-	} __attribute__((packed)) data;
+	} data;
 } __attribute__((packed));
 
 #define EDID_DETAIL_EST_TIMINGS 0xf7
@@ -166,12 +166,11 @@ struct detailed_timing {
 	union {
 		struct detailed_pixel_timing pixel_data;
 		struct detailed_non_pixel other_data;
-	} __attribute__((packed)) data;
+	} data;
 } __attribute__((packed));
 
 #define DRM_EDID_INPUT_SERRATION_VSYNC (1 << 0)
 #define DRM_EDID_INPUT_SYNC_ON_GREEN   (1 << 1)
-#define DRM_EDID_INPUT_COMPOSITE_SYNC  (1 << 2)
 #define DRM_EDID_INPUT_SEPARATE_SYNCS  (1 << 3)
 #define DRM_EDID_INPUT_BLANK_TO_BLACK  (1 << 4)
 #define DRM_EDID_INPUT_VIDEO_LEVEL     (3 << 5)
