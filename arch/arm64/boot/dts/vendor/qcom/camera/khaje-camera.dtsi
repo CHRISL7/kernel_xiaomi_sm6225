@@ -32,12 +32,11 @@
 			"csi0phytimer_clk_src",
 			"csi0phytimer_clk";
 		src-clock-name = "csi0phytimer_clk_src";
-		clock-cntl-level = "lowsvs", "svs", "svs_l1", "turbo";
+		clock-cntl-level = "svs", "svs_l1", "turbo";
 		clock-rates =
-			<19200000  0 19200000 0>,
 			<256000000 0 300000000 0>,
 			<384000000 0 300000000 0>,
-			<384000000 0 30000000 0>;
+			<384000000 0 300000000 0>;
 		qcom,cam-cx-ipeak = <&cx_ipeak_lm 8>;
 		status = "ok";
 	};
@@ -68,12 +67,11 @@
 			"csi1phytimer_clk_src",
 			"csi1phytimer_clk";
 		src-clock-name = "csi1phytimer_clk_src";
-		clock-cntl-level = "lowsvs", "svs", "svs_l1", "turbo";
+		clock-cntl-level = "svs", "svs_l1", "turbo";
 		clock-rates =
-			<19200000  0 19200000 0>,
 			<256000000 0 300000000 0>,
 			<384000000 0 300000000 0>,
-			<384000000 0 30000000 0>;
+			<384000000 0 300000000 0>;
 		qcom,cam-cx-ipeak = <&cx_ipeak_lm 8>;
 		status = "ok";
 	};
@@ -104,12 +102,11 @@
 				"csi2phytimer_clk_src",
 				"csi2phytimer_clk";
 		src-clock-name = "csi2phytimer_clk_src";
-		clock-cntl-level = "lowsvs", "svs", "svs_l1", "turbo";
+		clock-cntl-level = "svs", "svs_l1", "turbo";
 		clock-rates =
-			<19200000  0 19200000 0>,
 			<256000000 0 300000000 0>,
 			<384000000 0 300000000 0>,
-			<384000000 0 30000000 0>;
+			<384000000 0 300000000 0>;
 		qcom,cam-cx-ipeak = <&cx_ipeak_lm 8>;
 		status = "ok";
 	};
