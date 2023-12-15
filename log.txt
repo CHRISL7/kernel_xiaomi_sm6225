@@ -1,0 +1,166 @@
+make[1]: Entering directory '/home/chris/pa/kernel/xiaomi/sm6225/out'
+  HOSTCC  scripts/basic/fixdep
+  GEN     ./Makefile
+  HOSTCC  scripts/kconfig/conf.o
+  HOSTCC  scripts/kconfig/zconf.tab.o
+  HOSTLD  scripts/kconfig/conf
+#
+# configuration written to .config
+#
+make[1]: Leaving directory '/home/chris/pa/kernel/xiaomi/sm6225/out'
+
+Starting compilation...
+
+make[1]: Entering directory '/home/chris/pa/kernel/xiaomi/sm6225/out'
+  HOSTCC  scripts/basic/fixdep
+  GEN     ./Makefile
+  HOSTCC  scripts/kconfig/conf.o
+  HOSTCC  scripts/kconfig/zconf.tab.o
+  HOSTLD  scripts/kconfig/conf
+scripts/kconfig/conf  --syncconfig Kconfig
+*
+* Restart config...
+*
+*
+* General architecture-dependent options
+*
+Kprobes (KPROBES) [N/y/?] n
+Optimize very unlikely/likely branches (JUMP_LABEL) [N/y/?] n
+Stack Protector buffer overflow detection (STACKPROTECTOR) [Y/n/?] y
+  Strong Stack Protector (STACKPROTECTOR_STRONG) [Y/n/?] y
+Link-Time Optimization (LTO) (EXPERIMENTAL)
+> 1. None (LTO_NONE)
+  2. Use clang Link Time Optimization (LTO) (EXPERIMENTAL) (LTO_CLANG) (NEW)
+choice[1-2?]: 
+Clang Shadow Call Stack (SHADOW_CALL_STACK) [N/y/?] (NEW) 
+Number of bits to use for ASLR of mmap base address (ARCH_MMAP_RND_BITS) [18] 18
+Number of bits to use for ASLR of mmap base address for compatible applications (ARCH_MMAP_RND_COMPAT_BITS) [11] 11
+Use a virtually-mapped stack (VMAP_STACK) [Y/n/?] y
+Perform full reference count validation at the expense of speed (REFCOUNT_FULL) [Y/?] y
+Kernel panic on refcount error detection (PANIC_ON_REFCOUNT_ERROR) [N/y/?] n
+Use RELR relocation packing (RELR) [Y/n/?] (NEW) 
+*
+* Memory initialization
+*
+Initialize kernel stack variables at function entry
+> 1. no automatic stack variable initialization (weakest) (INIT_STACK_NONE)
+  2. pattern-init everything (strongest) (INIT_STACK_ALL_PATTERN) (NEW)
+  3. zero-init everything (strongest and safest) (INIT_STACK_ALL_ZERO) (NEW)
+choice[1-3?]: 
+Enable heap memory zeroing on allocation by default (INIT_ON_ALLOC_DEFAULT_ON) [Y/n/?] y
+Enable heap memory zeroing on free by default (INIT_ON_FREE_DEFAULT_ON) [N/y/?] n
+  GEN     ./Makefile
+  Using .. as source for kernel
+  CALL    ../scripts/checksyscalls.sh
+  CHK     include/generated/compile.h
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-1gb.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-2gb.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-iot-2gb.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-iot.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengalp.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengalp-iot-2gb.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengalp-iot.dtb
+  CHK     kernel/kheaders_data.tar.xz
+  DTC     arch/arm64/boot/dts/vendor/qcom/khaje.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeg.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajep.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeq.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/scubap.dtb
+  CC      fs/eventfd.o
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-2gb.dtb
+  CC      fs/verity/signature.o
+  CC      fs/aio.o
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-iot.dtb
+  CC      fs/compat.o
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-iot-2gb.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/scubap-iot.dtb
+  CC      fs/locks.o
+  CC      fs/compat_ioctl.o
+  CC      fs/binfmt_script.o
+  DTC     arch/arm64/boot/dts/vendor/qcom/scubap-iot-idp.dtb
+  CC      fs/binfmt_elf.o
+  CC      fs/compat_binfmt_elf.o
+  CC      fs/mbcache.o
+  CC      fs/posix_acl.o
+  DTC     arch/arm64/boot/dts/vendor/qcom/scubap-iot-idp-2gb.dtb
+  CC      fs/coredump.o
+  CC      fs/drop_caches.o
+  CC      fs/iomap.o
+  DTC     arch/arm64/boot/dts/vendor/qcom/scubap-iot-2gb.dtb
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-idp-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-idp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-idp-usbc-2gb-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-idp-usbc-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-iot-idp-2gb-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-iot-idp-usbc-2gb-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-rumi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengalp-idp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengalp-iot-idp-2gb-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengalp-iot-idp-usbc-2gb-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khaje-atp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khaje-idp-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khaje-idp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khaje-idp-pm8010-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khaje-idp-usbc-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khaje-idps-display-90hz-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khaje-qrd-hvdcp3p5-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khaje-qrd-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khaje-qrd-nowcd9375-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khaje-qrd-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeg-atp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeg-idp-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeg-idp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeg-idp-pm8010-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeg-idp-usbc-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeg-idps-display-90hz-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeg-qrd-hvdcp3p5-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeg-qrd-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeg-qrd-nowcd9375-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeg-qrd-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajep-atp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajep-idp-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajep-idp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajep-idp-pm8010-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajep-idp-usbc-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajep-idps-display-90hz-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajep-qrd-hvdcp3p5-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajep-qrd-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajep-qrd-nowcd9375-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajep-qrd-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeq-atp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeq-idp-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeq-idp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeq-idp-pm8010-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeq-idp-usbc-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeq-idps-display-90hz-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeq-qrd-hvdcp3p5-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeq-qrd-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeq-qrd-nowcd9375-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/khajeq-qrd-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-idp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-idp-usbc-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-iot-idp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-iot-idp-usbc-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-iot-qrd-eldo-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-iot-qrd-non-eldo-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-iot-rb1-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-qrd-eldo-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-qrd-non-eldo-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/scuba-rumi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/scubalite-iot-idp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/spes-khaje-idp-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/spes-sm5602-khaje-idp-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/spesn-khaje-idp-nopmi-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-idp-1gb-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-idp-2gb-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-idp-usbc-1gb-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-iot-idp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengal-iot-idp-usbc-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengalp-iot-idp-overlay.dtbo
+  DTC     arch/arm64/boot/dts/vendor/qcom/bengalp-iot-idp-usbc-overlay.dtbo
+  DTBOIMG arch/arm64/boot/dtbo.img
+make[1]: Leaving directory '/home/chris/pa/kernel/xiaomi/sm6225/out'
+
+Compilation failed!
