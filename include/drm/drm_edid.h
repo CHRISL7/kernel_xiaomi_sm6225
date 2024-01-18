@@ -171,6 +171,7 @@ struct detailed_timing {
 
 #define DRM_EDID_INPUT_SERRATION_VSYNC (1 << 0)
 #define DRM_EDID_INPUT_SYNC_ON_GREEN   (1 << 1)
+#define DRM_EDID_INPUT_COMPOSITE_SYNC  (1 << 2)
 #define DRM_EDID_INPUT_SEPARATE_SYNCS  (1 << 3)
 #define DRM_EDID_INPUT_BLANK_TO_BLACK  (1 << 4)
 #define DRM_EDID_INPUT_VIDEO_LEVEL     (3 << 5)
