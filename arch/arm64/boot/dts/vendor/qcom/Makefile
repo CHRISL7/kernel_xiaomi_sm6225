@@ -149,6 +149,7 @@ endif
 ifeq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
         dtbo-$(CONFIG_ARCH_BENGAL) += \
                 bengal-rumi-overlay.dtbo \
+				bengal-qrd-overlay.dtbo \
                 bengal-idp-overlay.dtbo \
                 bengal-idp-nopmi-overlay.dtbo \
                 bengal-idp-usbc-overlay.dtbo \
