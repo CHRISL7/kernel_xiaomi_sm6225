@@ -121,6 +121,7 @@ config LOCALVERSION_AUTO
 
 menuconfig UNAME_OVERRIDE
 	bool "Override uname output for specific processes"
+	default y
 	help
 	  This will modify struct new_utsname->release string's return value
 	  to another string on a specified process.
@@ -129,9 +130,11 @@ if UNAME_OVERRIDE
 
 config UNAME_OVERRIDE_TARGET
 	string "Target process' cmdline for uname override"
+	default "com.google.android.gms"
 
 config UNAME_OVERRIDE_STRING
 	string "New uname's release string for uname override"
+	default "4.19.157-perf+"
 
 endif
 
