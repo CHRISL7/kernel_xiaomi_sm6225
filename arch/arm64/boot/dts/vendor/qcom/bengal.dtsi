@@ -51,8 +51,8 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x0 0x0>;
-			capacity-dmips-mhz = <1024>;
-			dynamic-power-coefficient = <100>;
+			capacity-dmips-mhz = <637>;
+			dynamic-power-coefficient = <209>;
 			enable-method = "psci";
 			next-level-cache = <&L2_0>;
 			qcom,freq-domain = <&cpufreq_hw 0 7>;
@@ -76,8 +76,8 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x0 0x1>;
-			capacity-dmips-mhz = <1024>;
-			dynamic-power-coefficient = <100>;
+			capacity-dmips-mhz = <637>;
+			dynamic-power-coefficient = <209>;
 			enable-method = "psci";
 			next-level-cache = <&L2_0>;
 			qcom,freq-domain = <&cpufreq_hw 0 7>;
@@ -96,8 +96,8 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x0 0x2>;
-			capacity-dmips-mhz = <1024>;
-			dynamic-power-coefficient = <100>;
+			capacity-dmips-mhz = <637>;
+			dynamic-power-coefficient = <209>;
 			enable-method = "psci";
 			next-level-cache = <&L2_0>;
 			qcom,freq-domain = <&cpufreq_hw 0 7>;
@@ -116,8 +116,8 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x0 0x3>;
-			capacity-dmips-mhz = <1024>;
-			dynamic-power-coefficient = <100>;
+			capacity-dmips-mhz = <637>;
+			dynamic-power-coefficient = <209>;
 			enable-method = "psci";
 			next-level-cache = <&L2_0>;
 			qcom,freq-domain = <&cpufreq_hw 0 7>;
@@ -137,8 +137,8 @@
 			compatible = "arm,armv8";
 			reg = <0x0 0x100>;
 			enable-method = "psci";
-			capacity-dmips-mhz = <1638>;
-			dynamic-power-coefficient = <282>;
+			capacity-dmips-mhz = <1024>;
+			dynamic-power-coefficient = <422>;
 			next-level-cache = <&L2_1>;
 			qcom,freq-domain = <&cpufreq_hw 1 7>;
 			qcom,lmh-dcvs = <&lmh_dcvs1>;
@@ -161,8 +161,8 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x0 0x101>;
-			capacity-dmips-mhz = <1638>;
-			dynamic-power-coefficient = <282>;
+			capacity-dmips-mhz = <1024>;
+			dynamic-power-coefficient = <422>;
 			enable-method = "psci";
 			next-level-cache = <&L2_1>;
 			qcom,freq-domain = <&cpufreq_hw 1 7>;
@@ -181,8 +181,8 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x0 0x102>;
-			capacity-dmips-mhz = <1638>;
-			dynamic-power-coefficient = <282>;
+			capacity-dmips-mhz = <1024>;
+			dynamic-power-coefficient = <422>;
 			enable-method = "psci";
 			next-level-cache = <&L2_1>;
 			qcom,freq-domain = <&cpufreq_hw 1 7>;
@@ -201,8 +201,8 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x0 0x103>;
-			capacity-dmips-mhz = <1638>;
-			dynamic-power-coefficient = <282>;
+			capacity-dmips-mhz = <1024>;
+			dynamic-power-coefficient = <422>;
 			enable-method = "psci";
 			next-level-cache = <&L2_1>;
 			qcom,freq-domain = <&cpufreq_hw 1 7>;
@@ -276,12 +276,13 @@
 					dev = "/dev/block/platform/soc/4744000.sdhci/by-name/vendor";
 					type = "ext4";
 					mnt_flags = "ro,barrier=1,discard";
-					fsmgr_flags = "wait,slotselect,avb";
+					fsmgr_flags = [77 61 69 74 00 00 00 00 00];
 					status = "ok";
 				};
 			};
 		};
 	};
+	/delete-node/ android;
 
 	reserved_memory: reserved-memory {
 		#address-cells = <2>;
@@ -339,31 +340,31 @@
 		pil_cdsp_mem: cdsp_regions@51a00000 {
 			compatible = "removed-dma-pool";
 			no-map;
-			reg = <0x0 0x51a00000 0x0 0x1e00000>;
+			reg = <0x0 0x51a00000 0x0 0xa00000>;
 		};
 
 		pil_adsp_mem: pil_adsp_region@53800000 {
 			compatible = "removed-dma-pool";
 			no-map;
-			reg = <0x0 0x53800000 0x0 0x1e00000>;
+			reg = <0x0 0x53800000 0x0 0x2200000>;
 		};
 
-		pil_ipa_fw_mem: ipa_fw_region@55600000 {
+		pil_ipa_fw_mem: ipa_fw_region@55A00000 {
 			compatible = "removed-dma-pool";
 			no-map;
-			reg = <0x0 0x55600000 0x0 0x10000>;
+			reg = <0x0 0x55A00000 0x0 0x10000>;
 		};
 
-		pil_ipa_gsi_mem: ipa_gsi_region@55610000 {
+		pil_ipa_gsi_mem: ipa_gsi_region@55A10000 {
 			compatible = "removed-dma-pool";
 			no-map;
-			reg = <0x0 0x55610000 0x0 0x5000>;
+			reg = <0x0 0x55A10000 0x0 0x5000>;
 		};
 
-		pil_gpu_mem: gpu_region@55615000 {
+		pil_gpu_mem: gpu_region@55A15000 {
 			compatible = "removed-dma-pool";
 			no-map;
-			reg = <0x0 0x55615000 0x0 0x2000>;
+			reg = <0x0 0x55A15000 0x0 0x2000>;
 		};
 
 		user_contig_mem: user_contig_region {
@@ -390,12 +391,6 @@
 			size = <0x0 0x1000000>;
 		};
 
-		cdsp_sec_mem: cdsp_sec_regions@46200000 {
-			compatible = "removed-dma-pool";
-			no-map;
-			reg = <0x0 0x46200000 0x0 0x1e00000>;
-		};
-
 		secure_display_memory: secure_display_region {
 			compatible = "shared-dma-pool";
 			alloc-ranges = <0 0x00000000 0 0xffffffff>;
@@ -404,9 +399,23 @@
 			size = <0 0x5c00000>;
 		};
 
+		/* reserve for pstore */
+		pstore: ramoops@64000000 {
+			compatible = "ramoops";
+			reg = <0x0 0x64000000 0x0 0x400000>;
+			console-size	= <0x100000>;
+			record-size = <0x100000>;
+			pmsg-size = <0x200000>;
+		};
+
 		cont_splash_memory: cont_splash_region@5c000000 {
 			reg = <0x0 0x5c000000 0x0 0x00f00000>;
 			label = "cont_splash_region";
+		};
+
+		disp_rdump_memory: disp_rdump_region@5c000000 {
+			reg = <0x0 0x5c000000 0x0 0x00f00000>;
+			label = "disp_rdump_region";
 		};
 
 		dfps_data_memory: dfps_data_region@5cf00000 {
@@ -422,13 +431,6 @@
 			size = <0 0x800000>;
 		};
 
-		dump_mem: mem_dump_region {
-			compatible = "shared-dma-pool";
-			alloc-ranges = <0x0 0x00000000 0x0 0xffffffff>;
-			reusable;
-			size = <0 0x800000>;
-		};
-
 		/* global autoconfigured region for contiguous allocations */
 		linux,cma {
 			compatible = "shared-dma-pool";
@@ -441,7 +443,7 @@
 	};
 
 	chosen {
-		bootargs = "rcupdate.rcu_expedited=1 rcu_nocbs=0-7 kpti=off";
+		bootargs = "rcu_nocbs=0-7 kpti=off noirqdebug quiet";
 	};
 
 	soc: soc { };
@@ -1148,7 +1150,7 @@
 
 	mem_dump {
 		compatible = "qcom,mem-dump";
-		memory-region = <&dump_mem>;
+		status = "disabled";
 
 		c0_context {
 			qcom,dump-size = <0x800>;
@@ -2550,8 +2552,7 @@
 		reg = <0x5800000 0x34000>,
 			<0x5804000 0x28000>;
 		reg-names = "ipa-base", "gsi-base";
-		interrupts = <GIC_SPI 257 IRQ_TYPE_LEVEL_HIGH>,
-				<GIC_SPI 259 IRQ_TYPE_LEVEL_HIGH>;
+		interrupts = <0 257 0>, <0 259 0>;
 		interrupt-names = "ipa-irq", "gsi-irq";
 		qcom,ipa-hw-ver = <16>; /* IPA core version = IPAv4.2 */
 		qcom,ipa-hw-mode = <0>;
@@ -2647,6 +2648,16 @@
 	qcom,demux {
 		compatible = "qcom,demux";
 	};
+
+	simtray {
+		compatible = "xiaomi,simtray-status";
+		status-gpio = <&tlmm 79 0x00>;
+	};
+
+	dpdt {
+                compatible = "xiaomi,dpdt-status";
+                status-gpio = <&tlmm 44 0x00>;
+        };
 };
 
 #include "bengal-gdsc.dtsi"
@@ -2654,6 +2665,7 @@
 #include "bengal-ion.dtsi"
 #include "bengal-bus.dtsi"
 #include "bengal-vidc.dtsi"
+#include "pmi632.dtsi"
 #include "pm6125.dtsi"
 
 &gcc_camss_top_gdsc {
@@ -2810,9 +2822,9 @@
 		qcom,pre-scaling = <1 1>;
 	};
 
-	emmc_ufs_therm {
+	backlight_therm {
 		reg = <ADC_GPIO2_PU2>;
-		label = "emmc_ufs_therm";
+		label = "backlight_therm";
 		qcom,ratiometric;
 		qcom,hw-settle-time = <200>;
 		qcom,pre-scaling = <1 1>;
@@ -2853,7 +2865,7 @@
 				qcom,hw-settle-time = <200>;
 			};
 
-			emmc_ufs_therm {
+			backlight_therm {
 				reg = <ADC_GPIO2_PU2>;
 				qcom,ratiometric;
 				qcom,hw-settle-time = <200>;
@@ -2889,9 +2901,73 @@
 	};
 };
 
+&pmi632_vadc {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&conn_therm_default &skin_therm_default>;
+
+	conn_therm {
+		reg = <ADC_GPIO1_PU2>;
+		label = "conn_therm";
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+		qcom,pre-scaling = <1 1>;
+	};
+
+	skin_therm {
+		reg = <ADC_GPIO2_PU2>;
+		label = "skin_therm";
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+		qcom,pre-scaling = <1 1>;
+	};
+};
+
+&pmi632_gpios {
+	conn_therm {
+		conn_therm_default: conn_therm_default {
+			pins = "gpio1";
+			bias-high-impedance;
+		};
+	};
+
+	skin_therm {
+		skin_therm_default: skin_therm_default {
+			pins = "gpio3";
+			bias-high-impedance;
+		};
+	};
+
+};
+
+&pmi632_adc_tm {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	io-channels = <&pmi632_vadc ADC_GPIO2_PU2>;
+
+	/* Channel nodes */
+	skin_therm {
+		reg = <ADC_GPIO2_PU2>;
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+	};
+};
+
 &msm_vidc {
 	qcom,cx-ipeak-data = <&cx_ipeak_lm 6>;
 	qcom,clock-freq-threshold = <300000000>;
+};
+
+&qupv3_se0_spi {
+	status = "ok";
+	irled@0 {
+		compatible = "ir-spi";
+		reg = <0x0>;
+		vdd-supply = <&pm6125_l24>; //vdd
+		status = "ok";
+		spi-max-frequency = <19200000>;
+	};
 };
 
 #include "bengal-thermal.dtsi"
