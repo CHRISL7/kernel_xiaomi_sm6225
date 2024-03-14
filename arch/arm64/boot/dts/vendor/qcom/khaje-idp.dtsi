@@ -6,6 +6,10 @@
 #include "bengal-thermal-overlay.dtsi"
 #include "khaje-sde-display.dtsi"
 
+&qupv3_se4_2uart {
+	status = "ok";
+};
+
 &soc {
         xiaomi_touch {
 		status = "ok";

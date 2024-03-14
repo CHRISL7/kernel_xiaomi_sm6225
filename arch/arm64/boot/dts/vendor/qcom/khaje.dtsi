@@ -566,12 +566,6 @@
 		qcom,coresight-jtagmm-cpu = <&CPU7>;
 	};
 
-    sn_fuse:snfuse@0x01B46134 {
-		compatible = "qcom,sn-fuse";
-		reg = <0x1b46134 0x04 0x1b4607c 0x04>;
-		reg-names = "sn-base", "fuse-state";
-	};
-
 	qcom,memshare {
 		compatible = "qcom,memshare";
 
