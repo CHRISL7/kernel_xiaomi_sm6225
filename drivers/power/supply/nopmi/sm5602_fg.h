@@ -14,11 +14,12 @@
 
 #define FG_INIT_MARK				0xA000
 
-#define FG_PARAM_UNLOCK_CODE	  	0x3700
+#define FG_PARAM_UNLOCK_CODE	  		0x3700
 #define FG_PARAM_LOCK_CODE	  		0x0000
 #define FG_TABLE_LEN				0x18//real table length -1
 #define FG_ADD_TABLE_LEN			0x8//real table length -1
-#define FG_INIT_B_LEN		    	0x7//real table length -1
+#define FG_INIT_B_LEN		    		0x7//real table length -1
+#define FG_TABLE_MAX_LEN			0x18//real table length -1
 
 #define ENABLE_EN_TEMP_IN           0x0200
 #define ENABLE_EN_TEMP_EX           0x0400
@@ -31,6 +32,7 @@
 /* REG */
 #define FG_REG_SOC_CYCLE			0x0B
 #define FG_REG_SOC_CYCLE_CFG		0x15
+#define FG_REG_BATT_ID			0x1F
 #define FG_REG_ALPHA             	0x20
 #define FG_REG_BETA              	0x21
 #define FG_REG_RS                	0x24
@@ -62,14 +64,17 @@
 #define INIT_CHECK_MASK         	0x0010
 #define DISABLE_RE_INIT         	0x0010
 
+#define I2C_ERROR_COUNT_MAX			0x5
+
 enum {
-	BATTERY_VENDOR_NVT = 0,
+	BATTERY_VENDOR_START = 0,
 	BATTERY_VENDOR_GY = 1,
 	BATTERY_VENDOR_XWD = 2,
-	BATTERY_VENDOR_UNKNOWN = 3
-};
-
+	BATTERY_VENDOR_NVT = 3,
+	BATTERY_VENDOR_UNKNOWN = 4
+};//Please be consistent with the sm5602_fg.h 
 
 //2021.09.06 wsy edit for remove irq
 #define FG_REMOVE_IRQ	1
+
 #endif /* SM5602_FG_H */
