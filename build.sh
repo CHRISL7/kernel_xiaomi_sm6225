@@ -15,6 +15,8 @@ if test -z "$(git rev-parse --show-cdup 2>/dev/null)" &&
 fi
 
 export PATH="$TC_DIR/bin:$PATH"
+export KBUILD_BUILD_USER=nobody
+export KBUILD_BUILD_HOST=android-build
 
 if ! [ -d "$TC_DIR" ]; then
 	echo "AOSP clang not found! Cloning to $TC_DIR..."
