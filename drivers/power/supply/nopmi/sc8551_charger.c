@@ -25,9 +25,7 @@
 #include <linux/debugfs.h>
 #include <linux/bitops.h>
 #include <linux/math64.h>
-#include <asm/neon.h>
 #include "sc8551_reg.h"
-
 
 typedef enum {
 	ADC_IBUS,
@@ -42,7 +40,7 @@ typedef enum {
 	ADC_MAX_NUM,
 }ADC_CH;
 
-static float sc8551_adc_lsb[] = {
+static int  sc8551_adc_lsb[] = {
 	[ADC_IBUS]	= SC8551_IBUS_ADC_LSB,
 	[ADC_VBUS]	= SC8551_VBUS_ADC_LSB,
 	[ADC_VAC]	= SC8551_VAC_ADC_LSB,
@@ -982,10 +980,11 @@ EXPORT_SYMBOL_GPL(sc8551_set_adc_scanrate);
 static int sc8551_get_adc_data(struct sc8551 *sc, int channel,  int *result)
 {
 	int ret;
-	u8 val_l, val_h;
 	u16 val;
+	u8 val_l, val_h;
+	s16 t;
 
-	if(channel < 0 || channel >= ADC_MAX_NUM) return 0;
+	if(channel < 0 || channel >= ADC_MAX_NUM) return -EINVAL;
 
 	ret = sc8551_read_byte(sc, ADC_REG_BASE + (channel << 1), &val_h);
 	ret = sc8551_read_byte(sc, ADC_REG_BASE + (channel << 1) + 1, &val_l);
@@ -996,9 +995,7 @@ static int sc8551_get_adc_data(struct sc8551 *sc, int channel,  int *result)
 	*result = val;
 
 	if (sc->chip_vendor == SC8551) {
-		kernel_neon_begin();
-		*result = (int)(val * sc8551_adc_lsb[channel]);
-		kernel_neon_end();
+		*result = (u64)t * (u64)sc8551_adc_lsb[channel] / 10000000;
 	}
 	return 0;
 }

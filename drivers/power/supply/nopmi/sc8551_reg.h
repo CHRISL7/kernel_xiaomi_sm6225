@@ -507,7 +507,7 @@
 /* Register 16h */
 #define SC8551_REG_16						0x16
 #define SC8551_IBUS_POL_H_MASK				0x0F
-#define SC8551_IBUS_ADC_LSB				    1.5625
+#define SC8551_IBUS_ADC_LSB				    15625000
 
 /* Register 17h */
 #define SC8551_REG_17						0x17
@@ -516,7 +516,7 @@
 /* Register 18h */
 #define SC8551_REG_18						0x18
 #define SC8551_VBUS_POL_H_MASK				0x0F
-#define SC8551_VBUS_ADC_LSB					3.75
+#define SC8551_VBUS_ADC_LSB					37500000
 
 /* Register 19h */
 #define SC8551_REG_19						0x19
@@ -525,7 +525,7 @@
 /* Register 1Ah */
 #define SC8551_REG_1A						0x1A
 #define SC8551_VAC_POL_H_MASK				0x0F
-#define SC8551_VAC_ADC_LSB					5
+#define SC8551_VAC_ADC_LSB					50000000
 
 /* Register 1Bh */
 #define SC8551_REG_1B						0x1B
@@ -534,7 +534,7 @@
 /* Register 1Ch */
 #define SC8551_REG_1C						0x1C
 #define SC8551_VOUT_POL_H_MASK				0x0F
-#define SC8551_VOUT_ADC_LSB					1.25
+#define SC8551_VOUT_ADC_LSB					12500000
 
 /* Register 1Dh */
 #define SC8551_REG_1D						0x1D
@@ -543,7 +543,7 @@
 /* Register 1Eh */
 #define SC8551_REG_1E						0x1E
 #define SC8551_VBAT_POL_H_MASK				0x0F
-#define SC8551_VBAT_ADC_LSB 				1.2575
+#define SC8551_VBAT_ADC_LSB 				12575000
 
 /* Register 1Fh */
 #define SC8551_REG_1F						0x1F
@@ -552,7 +552,7 @@
 /* Register 20h */
 #define SC8551_REG_20						0x20
 #define SC8551_IBAT_POL_H_MASK				0x0F
-#define SC8551_IBAT_ADC_LSB 				3.125
+#define SC8551_IBAT_ADC_LSB 				31250000
 
 /* Register 21h */
 #define SC8551_REG_21						0x21
@@ -561,7 +561,7 @@
 /* Register 22h */
 #define SC8551_REG_22						0x22
 #define SC8551_TSBUS_POL_H_MASK				0x03
-#define SC8551_TSBUS_ADC_LSB 				0.09766
+#define SC8551_TSBUS_ADC_LSB 				9766
 
 /* Register 23h */
 #define SC8551_REG_23						0x23
@@ -570,7 +570,7 @@
 /* Register 24h */
 #define SC8551_REG_24						0x24
 #define SC8551_TSBAT_POL_H_MASK				0x03
-#define SC8551_TSBAT_ADC_LSB 				0.09766
+#define SC8551_TSBAT_ADC_LSB 				9766
 
 /* Register 25h */
 #define SC8551_REG_25						0x25
@@ -579,7 +579,7 @@
 /* Register 26h */
 #define SC8551_REG_26						0x26
 #define SC8551_TDIE_POL_H_MASK				0x01
-#define SC8551_TDIE_ADC_LSB 				0.5
+#define SC8551_TDIE_ADC_LSB 				5000000
 
 /* Register 27h */
 #define SC8551_REG_27						0x27
