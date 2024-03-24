@@ -80,10 +80,8 @@
 
 #define ADSP_STATE_READY_TIMEOUT_MS 3000
 
-#define WSA8810_NAME_1 "wsa881x.1020170211"
-#define WSA8810_NAME_2 "wsa881x.1020170212"
-#define WSA8815_NAME_1 "wsa881x.1021170213"
-#define WSA8815_NAME_2 "wsa881x.1021170214"
+#define WSA8810_NAME_1 "wsa881x.20170211"
+#define WSA8810_NAME_2 "wsa881x.20170212"
 #define WCN_CDC_SLIM_RX_CH_MAX 2
 #define WCN_CDC_SLIM_TX_CH_MAX 2
 #define WCN_CDC_SLIM_TX_CH_MAX_LITO 3
@@ -4985,7 +4983,7 @@ static void set_cps_config(struct snd_soc_pcm_runtime *rtd,
 					"Right")) {
 					component = soc_find_component_locked(
 						msm_aux_dev[j].codec_of_node,
-						NULL);
+					NULL);
 					n = j+1;
 					break;
 				}
@@ -5664,11 +5662,6 @@ static int msm_int_audrx_init(struct snd_soc_pcm_runtime *rtd)
 						WSA_MACRO_SPKR_MODE_1);
 				wsa_macro_set_spkr_gain_offset(component,
 						WSA_MACRO_GAIN_OFFSET_M1P5_DB);
-			} else if (aux_comp->name != NULL && (
-				!strcmp(aux_comp->name, WSA8815_NAME_1) ||
-		    		!strcmp(aux_comp->name, WSA8815_NAME_2))) {
-				wsa_macro_set_spkr_mode(component,
-						WSA_MACRO_SPKR_MODE_DEFAULT);
 			}
 		}
 	}

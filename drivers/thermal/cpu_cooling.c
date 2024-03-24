@@ -36,6 +36,8 @@
 
 #include <trace/events/thermal.h>
 
+#define USE_LMH_DEV    0
+
 /*
  * Cooling state <-> CPUFreq frequency
  *
@@ -152,7 +154,7 @@ static int cpufreq_thermal_notifier(struct notifier_block *nb,
 		 * Similarly, if policy minimum set by the user is less than
 		 * the floor_frequency, then adjust the policy->min.
 		 */
-		if (clipped_freq > cpufreq_cdev->clipped_freq)
+		 if (clipped_freq > cpufreq_cdev->clipped_freq)
 			clipped_freq = cpufreq_cdev->clipped_freq;
 	}
 
@@ -427,7 +429,7 @@ static int cpufreq_set_cur_state(struct thermal_cooling_device *cdev,
 
 	/* Request state should be less than max_level */
 	if (WARN_ON(state > cpufreq_cdev->max_level))
-		return cpufreq_cdev->max_level;
+		state = cpufreq_cdev->max_level;
 
 	/* Check if the old cooling action is same as new cooling action */
 	if (cpufreq_cdev->cpufreq_state == state)
@@ -441,10 +443,18 @@ static int cpufreq_set_cur_state(struct thermal_cooling_device *cdev,
 	 * can handle the CPU freq mitigation, if not, notify cpufreq
 	 * framework.
 	 */
-	get_online_cpus();
-	cpufreq_update_policy(cpufreq_cdev->policy->cpu);
-	put_online_cpus();
-
+    if (USE_LMH_DEV && cpufreq_cdev->plat_ops &&
+		cpufreq_cdev->plat_ops->ceil_limit) {
+		cpufreq_cdev->plat_ops->ceil_limit(cpufreq_cdev->policy->cpu,
+							clip_freq);
+		get_online_cpus();
+		cpufreq_update_policy(cpufreq_cdev->policy->cpu);
+		put_online_cpus();
+	} else {
+		get_online_cpus();
+		cpufreq_update_policy(cpufreq_cdev->policy->cpu);
+		put_online_cpus();
+	}
 	return 0;
 }
 
@@ -860,7 +870,7 @@ void cpufreq_cooling_unregister(struct thermal_cooling_device *cdev)
 	mutex_unlock(&cooling_list_lock);
 
 	if (last) {
-		cpufreq_unregister_notifier(
+            cpufreq_unregister_notifier(
 				&thermal_cpufreq_notifier_block,
 				CPUFREQ_POLICY_NOTIFIER);
 	}

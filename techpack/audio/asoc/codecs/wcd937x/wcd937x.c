@@ -175,7 +175,7 @@ static int wcd937x_init_reg(struct snd_soc_component *component)
 		snd_soc_component_update_bits(component,
 				WCD937X_BIAS_VBG_FINE_ADJ, 0xF0, 0xB0);
 		snd_soc_component_update_bits(component,
-				WCD937X_HPH_NEW_INT_RDAC_GAIN_CTL , 0xF0, 0x50);
+				WCD937X_RX_BIAS_HPH_LOWPOWER, 0xF0, 0x90);
 	}
 	return 0;
 }
@@ -1063,22 +1063,22 @@ static int wcd937x_codec_enable_ear_pa(struct snd_soc_dapm_widget *w,
 					0x17, 0x00);
 			clear_bit(WCD_EAR_EN, &wcd937x->status_mask);
 		}
-		usleep_range(10000, 10010);
+
+		//case 05657117 05669963 CR-30628852 BEGAIN
+		usleep_range(10000, 10100);
+
 		/* disable EAR CnP FSM */
 		snd_soc_component_update_bits(component,
-					WCD937X_EAR_EAR_EN_REG,
-					0x02, 0x00);
+			     WCD937X_EAR_EAR_EN_REG, 0x02, 0x00);
 		/* toggle EAR PA to let PA control registers take effect */
 		snd_soc_component_update_bits(component,
-					WCD937X_ANA_EAR,
-					0x80, 0x80);
+			     WCD937X_ANA_EAR, 0x80, 0x80);
 		snd_soc_component_update_bits(component,
-					WCD937X_ANA_EAR,
-					0x80, 0x00);
+			     WCD937X_ANA_EAR, 0x80, 0x00);
 		/* enable EAR CnP FSM */
 		snd_soc_component_update_bits(component,
-					WCD937X_EAR_EAR_EN_REG,
-					0x02, 0x02);
+			     WCD937X_EAR_EAR_EN_REG, 0x02, 0x02);
+		//case 05657117 05669963 CR-30628852 END
 		break;
 	};
 	return ret;
@@ -2286,7 +2286,11 @@ int aw87xxx_dev_1_pa(int enable, int mode)
 	else
 		set_mode = mode;
 	pr_info("%s: aw87xxx_spk_mode %d\n", __func__, set_mode);
+#if defined(CONFIG_TARGET_PROJECT_C3Q)
+	ret = aw87xxx_set_profile(AW_DEV_0, aw_profile[set_mode]);
+#else
 	ret = aw87xxx_set_profile(AW_DEV_1, aw_profile[set_mode]);
+#endif
 
 	if (ret < 0) {
 		pr_err("%s: mode:%d set failed\n", __func__, set_mode);

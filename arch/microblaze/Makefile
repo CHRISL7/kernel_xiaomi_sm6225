@@ -65,7 +65,9 @@ boot := arch/microblaze/boot
 # Are we making a simpleImage.<boardname> target? If so, crack out the boardname
 DTB:=$(subst simpleImage.,,$(filter simpleImage.%, $(MAKECMDGOALS)))
 
-core-y	+= $(boot)/dts/
+ifneq ($(DTB),)
+	core-y	+= $(boot)/dts/
+endif
 
 # defines filename extension depending memory management type
 ifeq ($(CONFIG_MMU),)

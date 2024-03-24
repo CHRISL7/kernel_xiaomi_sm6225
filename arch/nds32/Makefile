@@ -47,7 +47,7 @@ CHECKFLAGS      += -D__NDS32_EB__
 endif
 
 boot := arch/nds32/boot
-core-y += $(boot)/dts/
+core-$(BUILTIN_DTB) += $(boot)/dts/
 
 .PHONY: FORCE
 

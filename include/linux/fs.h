@@ -310,6 +310,7 @@ enum rw_hint {
 #define IOCB_EVENTFD		(1 << 16)
 #define IOCB_DIRECT		(1 << 17)
 #define IOCB_WRITE		(1 << 18)
+
 /* iocb->ki_waitq is valid */
 #define IOCB_WAITQ		(1 << 19)
 #define IOCB_NOIO		(1 << 20)
@@ -3424,7 +3425,7 @@ static inline int kiocb_set_rw_flags(struct kiocb *ki, rwf_t flags)
 	int kiocb_flags = 0;
 
 	/* make sure there's no overlap between RWF and private IOCB flags */
-	BUILD_BUG_ON((__force int)RWF_SUPPORTED & IOCB_EVENTFD);
+	BUILD_BUG_ON((__force int) RWF_SUPPORTED & IOCB_EVENTFD);
 
 	if (!flags)
 		return 0;
@@ -3436,7 +3437,7 @@ static inline int kiocb_set_rw_flags(struct kiocb *ki, rwf_t flags)
 			return -EOPNOTSUPP;
 		kiocb_flags |= IOCB_NOIO;
 	}
-	kiocb_flags |= (__force int)(flags & RWF_SUPPORTED);
+	kiocb_flags |= (__force int) (flags & RWF_SUPPORTED);
 	if (flags & RWF_SYNC)
 		kiocb_flags |= IOCB_DSYNC;
 

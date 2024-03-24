@@ -17,11 +17,7 @@
 
 #define ESOC_MAX_PON_TRIES	5
 
-#ifdef CONFIG_TARGET_PROJECT_K7T
-#define BOOT_FAIL_ACTION_DEF BOOT_FAIL_ACTION_NOP
-#else
 #define BOOT_FAIL_ACTION_DEF BOOT_FAIL_ACTION_PANIC
-#endif
 
 enum esoc_pon_state {
 	PON_INIT,
@@ -74,9 +70,6 @@ int esoc_set_boot_fail_action(struct esoc_clink *esoc_clink, u32 action)
 				action);
 		return -EINVAL;
 	}
-
-	if (action == BOOT_FAIL_ACTION_PANIC)
-		action = BOOT_FAIL_ACTION_DEF;
 
 	if (!mdm_drv) {
 		esoc_mdm_log("esoc-mdm driver not present\n");
@@ -396,7 +389,7 @@ static int mdm_handle_boot_fail(struct esoc_clink *esoc_clink, u8 *pon_trial)
 	if (*pon_trial == atomic_read(&mdm_drv->n_pon_tries)) {
 		esoc_mdm_log("Reached max. number of boot trials\n");
 		atomic_set(&mdm_drv->boot_fail_action,
-					BOOT_FAIL_ACTION_DEF);
+					BOOT_FAIL_ACTION_PANIC);
 	}
 
 	switch (atomic_read(&mdm_drv->boot_fail_action)) {

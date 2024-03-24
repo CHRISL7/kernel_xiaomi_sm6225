@@ -1,6 +1,7 @@
 /* drivers/cpufreq/cpufreq_times.c
  *
  * Copyright (C) 2018 Google, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -175,8 +176,7 @@ static struct pid_entry *find_pid_entry_rcu(u64 hash_code)
 {
 	struct pid_entry *pid_entry;
 
-	hash_for_each_possible_rcu(sys_app_hash_table,
-				   pid_entry, hash, hash_code) {
+	hash_for_each_possible_rcu(sys_app_hash_table, pid_entry, hash, hash_code) {
 		if (pid_entry->hash_code == hash_code)
 			return pid_entry;
 	}
@@ -197,8 +197,7 @@ static struct pid_entry *find_pid_entry_locked(u64 hash_code)
 
 /* Caller must hold pid lock */
 static struct pid_entry *find_or_register_pid_locked(u64 hash_code,
-						     const char *package,
-						     pid_t pid)
+						     const char *package, pid_t pid)
 {
 	struct pid_entry *pid_entry, *temp;
 	struct concurrent_times *times;
@@ -232,13 +231,13 @@ static struct pid_entry *find_or_register_pid_locked(u64 hash_code,
 		return NULL;
 	}
 	pid_entry->package = kzalloc(MAX_TASK_COMM_LEN, GFP_ATOMIC);
-	if (!pid_entry->package) {
+        if (!pid_entry->package) {
 		kfree(pid_entry);
 		kfree(times);
 		return NULL;
-	}
+        }
 
-	strscpy(pid_entry->package, package, MAX_TASK_COMM_LEN);
+	strncpy(pid_entry->package, package, MAX_TASK_COMM_LEN);
 	pid_entry->hash_code = hash_string(pid_entry->package);
 	pid_entry->pid = pid;
 	pid_entry->concurrent_times = times;
@@ -268,14 +267,13 @@ static void *pid_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 	return &sys_app_hash_table[*pos];
 }
 
-static void pid_seq_stop(struct seq_file *seq, void *v) { }
+static void pid_seq_stop(struct seq_file *seq, void *v){ }
 
 static int sys_app_concurrent_time_seq_show(struct seq_file *m, void *v,
 	atomic64_t *(*get_times)(struct concurrent_times *))
 {
 	struct pid_entry *pid_entry;
 	int i, num_possible_cpus = num_possible_cpus();
-
 	rcu_read_lock();
 
 	hlist_for_each_entry_rcu(pid_entry, (struct hlist_head *)v, hash) {
@@ -315,7 +313,6 @@ static int single_uid_time_in_state_show(struct seq_file *m, void *ptr)
 
 	for (i = 0; i < uid_entry->max_state; ++i) {
 		u64 time = nsec_to_clock_t(uid_entry->time_in_state[i]);
-
 		seq_write(m, &time, sizeof(time));
 	}
 
@@ -376,7 +373,6 @@ static int uid_time_in_state_seq_show(struct seq_file *m, void *v)
 		}
 		for (i = 0; i < uid_entry->max_state; ++i) {
 			u64 time = nsec_to_clock_t(uid_entry->time_in_state[i]);
-
 			seq_put_decimal_ull(m, " ", time);
 		}
 		if (uid_entry->max_state)
@@ -464,7 +460,6 @@ static int sys_app_time_in_state_seq_show(struct seq_file *m, void *v)
 		}
 		for (i = 0; i < pid_entry->max_state; ++i) {
 			u64 time = nsec_to_clock_t(pid_entry->time_in_state[i]);
-
 			seq_put_decimal_ull(m, " ", time);
 		}
 		if (pid_entry->max_state)
@@ -652,9 +647,9 @@ void cpufreq_acct_update_power(struct task_struct *p, u64 cputime)
 	uid_t uid = from_kuid_munged(current_user_ns(), task_uid(p));
 	int cpu = 0;
 	pid_t pid;
-	u64 tmp_hash;
-	struct pid_entry *pid_entry;
-	const char *package_name;
+        u64 tmp_hash;
+        struct pid_entry *pid_entry;
+        const char *package_name;
 
 	if (!freqs || is_idle_task(p) || p->flags & PF_EXITING)
 		return;
@@ -676,10 +671,9 @@ void cpufreq_acct_update_power(struct task_struct *p, u64 cputime)
 	if (uid == SYSTEM_UID) {
 		spin_lock_irqsave(&pid_lock, flags);
 		pid = p->tgid;
-		package_name = p->group_leader->comm;
-		tmp_hash = hash_string(package_name);
-		pid_entry = find_or_register_pid_locked(tmp_hash,
-							package_name, pid);
+        	package_name = p->group_leader->comm;
+        	tmp_hash = hash_string(package_name);
+        	pid_entry = find_or_register_pid_locked(tmp_hash, package_name, pid);
 		if (pid_entry && state < pid_entry->max_state)
 			pid_entry->time_in_state[state] += cputime;
 		spin_unlock_irqrestore(&pid_lock, flags);
@@ -719,16 +713,14 @@ void cpufreq_acct_update_power(struct task_struct *p, u64 cputime)
 	atomic64_add(cputime,
 		     &uid_entry->concurrent_times->policy[policy_first_cpu +
 							  policy_cpu_cnt - 1]);
-
 	if (uid == SYSTEM_UID) {
 		pid_entry = find_pid_entry_rcu(tmp_hash);
 		if (pid_entry) {
 			atomic64_add(cputime,
-				&pid_entry->concurrent_times->active[
-				active_cpu_cnt - 1]);
-			atomic64_add(cputime,
-				&pid_entry->concurrent_times->policy[
-				policy_first_cpu + policy_cpu_cnt - 1]);
+                		     &pid_entry->concurrent_times->active[active_cpu_cnt - 1]);
+                	atomic64_add(cputime,
+                        	     &pid_entry->concurrent_times->policy[policy_first_cpu +
+                                     					  policy_cpu_cnt - 1]);
 		}
 	}
 	rcu_read_unlock();
@@ -737,7 +729,7 @@ void cpufreq_acct_update_power(struct task_struct *p, u64 cputime)
 static int cpufreq_times_get_index(struct cpu_freqs *freqs, unsigned int freq)
 {
 	int index;
-	for (index = 0; index < freqs->max_state; ++index) {
+        for (index = 0; index < freqs->max_state; ++index) {
 		if (freqs->freq_table[index] == freq)
 			return index;
         }
@@ -915,8 +907,7 @@ static const struct seq_operations sys_app_concurrent_active_time_seq_ops = {
 	.show = sys_app_concurrent_active_time_seq_show,
 };
 
-static int sys_app_concurrent_active_time_open(struct inode *inode,
-					       struct file *file)
+static int sys_app_concurrent_active_time_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &sys_app_concurrent_active_time_seq_ops);
 }
@@ -935,8 +926,7 @@ static const struct seq_operations sys_app_concurrent_policy_time_seq_ops = {
 	.show = sys_app_concurrent_policy_time_seq_show,
 };
 
-static int sys_app_concurrent_policy_time_open(struct inode *inode,
-					       struct file *file)
+static int sys_app_concurrent_policy_time_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &sys_app_concurrent_policy_time_seq_ops);
 }

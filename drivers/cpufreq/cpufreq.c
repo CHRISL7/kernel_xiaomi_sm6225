@@ -32,6 +32,8 @@
 #include <linux/tick.h>
 #include <linux/sched/topology.h>
 #include <linux/sched/sysctl.h>
+#include <linux/proc_fs.h>
+#include <linux/seq_file.h>
 
 #include <trace/events/power.h>
 
@@ -84,6 +86,37 @@ static void cpufreq_exit_governor(struct cpufreq_policy *policy);
 static int cpufreq_start_governor(struct cpufreq_policy *policy);
 static void cpufreq_stop_governor(struct cpufreq_policy *policy);
 static void cpufreq_governor_limits(struct cpufreq_policy *policy);
+
+static int cpumaxfreq_show(struct seq_file *m, void *v)
+{
+	unsigned int maxfreq, freq;
+	int i;
+
+	maxfreq = cpufreq_quick_get_max(0);
+	for_each_possible_cpu(i) {
+		freq = cpufreq_quick_get_max(i);
+		if (freq > maxfreq)
+			maxfreq = freq;
+	}
+	/* value is used for setting cpumaxfreq */
+	maxfreq = 2400000;  //need to fix,it's temp
+	maxfreq /= 10000;
+	seq_printf(m,"%lu.%02lu", maxfreq/100, maxfreq%100);
+
+	return 0;
+}
+
+static int cpumaxfreq_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, &cpumaxfreq_show, NULL);
+}
+
+static const struct file_operations proc_cpumaxfreq_operations = {
+	.open       = cpumaxfreq_open,
+	.read       = seq_read,
+	.llseek     = seq_lseek,
+	.release    = seq_release,
+};
 
 /**
  * Two notifier lists: the "policy" list is involved in the
@@ -232,7 +265,7 @@ struct cpufreq_policy *cpufreq_cpu_get(unsigned int cpu)
 	struct cpufreq_policy *policy = NULL;
 	unsigned long flags;
 
-	if (cpu >= nr_cpu_ids)
+	if (WARN_ON(cpu >= nr_cpu_ids))
 		return NULL;
 
 	/* get the cpufreq driver */
@@ -2266,7 +2299,7 @@ static int cpufreq_set_policy(struct cpufreq_policy *policy,
 	blocking_notifier_call_chain(&cpufreq_policy_notifier_list,
 			CPUFREQ_ADJUST, new_policy);
 
-	/* adjust if necessary - hardware incompatibility */
+	/* the adjusted frequency should not exceed thermal limit*/
 	blocking_notifier_call_chain(&cpufreq_policy_notifier_list,
 			CPUFREQ_THERMAL, new_policy);
 
@@ -2643,6 +2676,7 @@ static int __init cpufreq_core_init(void)
 
 	cpufreq_global_kobject = kobject_create_and_add("cpufreq", &cpu_subsys.dev_root->kobj);
 	BUG_ON(!cpufreq_global_kobject);
+	proc_create("cpumaxfreq", 0, NULL, &proc_cpumaxfreq_operations);
 
 	return 0;
 }
