@@ -3701,6 +3701,7 @@ static struct platform_driver gcc_khaje_driver = {
 	.driver = {
 		.name = "gcc-khaje",
 		.of_match_table = gcc_khaje_match_table,
+		.probe_type = PROBE_FORCE_SYNCHRONOUS,
 	},
 };
 
