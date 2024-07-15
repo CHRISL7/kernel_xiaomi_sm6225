@@ -48,9 +48,10 @@ mkdir -p out
 make O=out ARCH=arm64 $DEFCONFIG
 
 echo -e "\nStarting compilation...\n"
-make -j$(nproc --all) O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 Image.gz dtbo.img 2> >(tee log.txt >&2) || exit $?
+make -j$(nproc --all) O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 Image.gz dtb.img dtbo.img 2> >(tee log.txt >&2) || exit $?
 
 kernel="out/arch/arm64/boot/Image.gz"
+dtb="out/arch/arm64/boot/dtb.img"
 dtbo="out/arch/arm64/boot/dtbo.img"
 
 if [ -f "$kernel" ]; then
@@ -61,7 +62,7 @@ if [ -f "$kernel" ]; then
 		echo -e "\nAnyKernel3 repo not found locally and couldn't clone from GitHub! Aborting..."
 		exit 1
 	fi
-	cp $kernel $dtbo AnyKernel3
+	cp $kernel $dtb $dtbo AnyKernel3
 	rm -rf out/arch/arm64/boot
 	cd AnyKernel3
 	git checkout master &> /dev/null
