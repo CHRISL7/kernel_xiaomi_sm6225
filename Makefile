@@ -508,6 +508,8 @@ endif
 
 ifeq ($(cc-name),clang)
 include $(srctree)/scripts/Makefile.clang
+CLANG_FLAGS	+= $(call cc-option, -Wno-misleading-indentation)
+CLANG_FLAGS	+= $(call cc-option, -Wno-bool-operation)
 endif
 
 RETPOLINE_CFLAGS_GCC := -mindirect-branch=thunk-extern -mindirect-branch-register
