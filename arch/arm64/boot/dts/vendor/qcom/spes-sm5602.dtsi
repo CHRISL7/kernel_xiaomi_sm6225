@@ -331,7 +331,7 @@
 		sc,sc8551,bat-ocp-alarm-threshold = <7500>;
 		sc,sc8551,bus-ovp-threshold = <12000>;
 		sc,sc8551,bus-ovp-alarm-threshold = <11000>;
-		sc,sc8551,bus-ocp-threshold = <4250>;
+		sc,sc8551,bus-ocp-threshold = <3750>;
 		sc,sc8551,bus-ocp-alarm-threshold = <3500>;
 		sc,sc8551,bat-ucp-alarm-threshold = <2000>;
 		sc,sc8551,bat-therm-threshold = <21>;
